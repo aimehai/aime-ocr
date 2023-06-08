@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+  <title>
+    Aminext Dashboard
+  </title>
+  <meta
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no"
+      name="viewport"
+  />
+  <!--     Fonts and icons     -->
+  <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:400,700|Material+Icons"
+  />
+  <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css"
+  />
+  <!-- CSS Files -->
+  <link href="static/assets/css/dashboard.min.css" rel="stylesheet"/>
+  <link rel="stylesheet/less" type="text/css" href="../static/css/styles.less"/>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+  <!-- CSS Just for demo purpose, don't include it in your project -->
+
+  <!-- <link href="static/assets/demo/demo.css" rel="stylesheet"/> -->
+
+  <link href="static/assets/css/custom.css" rel="stylesheet"/>
+
+  <style type="text/css">
+    html{ 
+      height: 100%;
+    } 
+
+    body{
+      height: 100%;
+      position: relative;
+    }
+  </style>
+
+  <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/vue.min.js') }}"></script>
+
+</head>
+
+<body style="background: rgb(59,141,184);
+background: linear-gradient(45deg, rgba(59,141,184,1) 15%, rgba(8,103,153,1) 37%, rgba(70,192,210,1) 68%);">
+<div style="
+display: flex;
+justify-content: flex-start;
+height: 100%;
+">
+{% if company %}
+<span>{{ company.id }}</span>
+{% endif %}
+<div class="card card-4" style="width: 35%;overflow: hidden;height: 90%;margin: 3%;">
+<div class="card-body" style="padding-left: unset; padding-right: unset;">
+  <h2 class="login-title" style="max-width: fit-content;margin: auto;">
+    <img src="static/imgs/logo.png" style="max-width: 50%;">
+  </h2>
+    <form method="POST" action="" style="padding: 10%;">
+      {{ form.hidden_tag() }}
+      <fieldset class="form-group">
+        <legend class="border-bottom mb-4">Create Company</legend>
+        <div class="form-row">
+          {{ form.name.label(class="form-control-label") }}
+  
+          {% if form.name.errors %}
+          {{ form.name(class="form-control form-control-lg is-invalid") }}
+          <div class="invalid-feedback">
+            {% for error in form.name.errors %}
+            <span>{{ error }}</span>
+            {% endfor %}
+          </div>
+          {% else %}
+          {{ form.name(class="form-control form-control-lg") }}
+          {% endif %}
+        </div>
+      </fieldset>
+      <div class="form-row">
+        {{ form.submit(class="btn btn-outline-info") }}
+      </div>
+    </form>
+  </div>
+  </div>
+  <div style="width: 60%;
+  padding: 40px;
+  height: 100vh;
+  display: block;
+  background: url(../static/imgs/layout.png) center no-repeat;
+  background-size: cover;
+  align-content: center;
+  opacity: 20%;">
+  </div>
+</div>
+<!--   Core JS Files   -->
+<script src="static/assets/js/core/jquery.min.js"></script>
+<script src="static/assets/js/material-dashboard.min.js?v=2.1.0" type="text/javascript"></script>
+<!-- Sharrre libray -->
+<script src="static/assets/demo/jquery.sharrre.js"></script>
+</body>
+</html>

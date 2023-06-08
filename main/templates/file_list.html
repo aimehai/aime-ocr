@@ -1,0 +1,649 @@
+{% extends "layout.html" %}
+{% block content %}
+  <style>
+  .fade-enter-active, .fade-leave-active {
+    transition: opacity .5s;
+  }
+  .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+    opacity: 0;
+  }
+  .close:active {
+    opacity: 0.4;
+    border: unset;
+    box-sizing: unset;
+  }
+  .col-md-3{
+    justify-content: flex-end;
+    display: flex;
+  }
+    /* Create a custom checkbox */
+    .checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 20px;
+    width: 20px;
+    
+    background: #FFFFFF;
+    border: 1px solid #086799;
+    box-sizing: border-box;
+    border-radius: 4px;
+    }
+
+
+    /* When the checkbox is checked, add a blue background */
+    .container input:checked ~ .checkmark {
+      background: #086799;
+    }
+
+    /* Create the checkmark/indicator (hidden when not checked) */
+    .checkmark:after {
+      content: "";
+      position: absolute;
+      display: none;
+    }
+    .dropdown-menu{
+       min-width: 27rem;
+   }
+    /* Show the checkmark when checked */
+    .container input:checked ~ .checkmark:after {
+      display: block;
+    }
+    tr.selected{
+      background-color: #DFF9FD !important;
+    }
+    /* Style the checkmark/indicator */
+    .container .checkmark:after {
+      left: 5px;
+      top: 0px;
+      width: 8px;
+      height: 14px;
+      border: solid white;
+      border-width: 0 2px 2px 0;
+      -webkit-transform: rotate(45deg);
+      -ms-transform: rotate(45deg);
+      transform: rotate(45deg);
+    }
+    .search {
+      position: relative;
+    }
+    .search ::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: #B4CADF;
+    opacity: 1; /* Firefox */
+    }
+    .scroller::-webkit-scrollbar-thumb:vertical:hover {
+      background-color: #5294B7;;
+    }
+    .td__content-text{
+        font-family: Noto Sans JP;
+        font-style: normal;
+        font-weight: normal;
+        font-size: 14px;
+        line-height: 20px;
+
+        color: #2D4761;
+    }
+    .td__content-text.name{
+      color: #086799;
+    }
+    .searchbox {
+      font-size: 14px;
+      width: 50%;
+      color: #000;
+      height: 4.5rem;
+      border: 1px solid #B4CADF;
+      padding: 5px 10px;
+      border-radius: 5px;
+      outline: none;
+      margin: 3px;
+    }
+    .td-brand-header{
+      border-top: unset !important;
+      font-weight: bold;
+    }
+
+    .searchbtn {
+      position: absolute;
+      font-size: 25px;
+      color: #B4CADF;
+      background-color: transparent;
+      border: none;
+      right: 8%;
+      top: 7px;
+      outline: none;
+      padding: 4px;
+    }
+
+    .btn-custom--primary__color {
+      box-shadow: none;
+      color: #727f93;
+      border: solid 1px #727f93;
+      background-color: inherit;
+    }
+
+    .dropdown-menu {
+      padding: 20px;
+    }
+
+    .dropdown-menu {
+      width: 180px;
+    }
+
+    ul li {
+      cursor: pointer;
+      color: #086799;
+    }
+
+    @-webkit-keyframes candystripe {
+      to {
+        background-position: 20px 0;
+      }
+    }
+
+    @-moz-keyframes candystripe {
+      to {
+        background-position: 20px 0;
+      }
+    }
+
+    @keyframes candystripe {
+      to {
+        background-position: 20px 0;
+      }
+    }
+  </style>
+  <script>
+    var localData = {{ data | tojson }};
+  </script>
+  <div id="file_list" class="content" style="padding-top: 8vh;">
+    <div class="container" style="margin: unset; width: 100%; max-width: 2560px !important;">
+      <div class="content__button" style="padding-top: 15px; padding-bottom: 10px;">
+        <div class="row" style="justify-content: space-between;">
+          <div class="col-xs-12 col-sm-12 col-md-4 col-lg-5">
+            <div class="row">
+              <div class="search col-xs-12 col-sm-12 col-md-10 col-lg-8">
+                <input type="text" name="q" class="searchbox" :placeholder=" langChoose =='ja' ? 'ファイル検索' : 'Search file'" style="color: #B4CADF; width: 100%; margin-left: unset;"
+                       v-model="cate_name" v-on:keyup="searchName()">
+                <button type="submit" class="searchbtn" style="    padding-top: 8px;">
+                  <img src="../static//imgs/search.png"> 
+                </button>
+              </div>
+              <div class="col-md-3">
+                <!-- <button type="button" class="btn btn-md btn-custom btn-custom--secodary__color" @click="startProcess()">
+                  <img src="../static/imgs/shape2.png" alt=""/>
+                  <span>OCR実行</span>
+                </button> -->
+              </div>
+              <!-- <div class="col-md-3">
+                <button type="button" class="btn btn-md btn-custom btn-custom--secodary__color" @click="startProcess()">
+                  <img src="static/imgs/shape2.png" alt=""/>
+                  <span>OCR実行</span>
+                </button>
+              </div>
+              <div class="col-md-3">
+                <button type="button" class="btn btn-custom btn-custom--secodary__color" v-on:click="deleteResult">
+                  <i class="material-icons">delete_outline</i>
+                  <span>削除</span>
+                </button>
+              </div>
+              <div class="col-md-3 dropdown">
+                <button type="button" class="btn btn-custom btn-custom--secodary__color" v-on:click="exportData()">
+                  <i class="material-icons">cloud_download</i>
+                  <span>CSV出力</span>
+                </button>
+              </div> -->
+            </div>
+          </div>
+          <div class="col-xs-12 col-sm-12 col-md-8 col-lg-7">
+            <div class="row" >
+              <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3 dropdown">
+                <button type="button" class="btn btn-custom btn-custom--primary__color btnLowerCase" id="categorySearch"
+                        data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                  <span>{% raw %}{{ langChoose =='ja' ? 'ブランド' : 'Brand'}}{% endraw %}  </span>
+                  <i class="material-icons">
+                    arrow_drop_down
+                  </i>
+                </button>
+                <div class="dropdown-menu" aria-labelledby="brandSearch" style="width: 150px">
+                  <div v-for="brand in listBrands" @click="$event.stopPropagation()">
+                    <label :for="brand">
+                      <input v-if="brand != null" :id="brand" type="checkbox" :value="brand" v-model="brand_filter"
+                             @change="brandFilter()">
+                      {% raw %}{{brand}}{% endraw %}
+                    </label>
+                  </div>
+                  <div>
+                    <button class="btn btn-sm btn-success" @click="cateSelectAll()">Select all</button>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3 dropdown">
+                <button type="button" class="btn btn-custom btn-custom--primary__color btnLowerCase" id="statusSearch"
+                        data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                  <span>{% raw %}{{ langChoose =='ja' ? 'ステータス' : 'Status'}}{% endraw %}</span>
+                  <i class="material-icons">
+                    arrow_drop_down
+                  </i>
+                </button>
+                <div class="dropdown-menu" aria-labelledby="statusSearch" style="width: 150px">
+                  <div v-for="sta,key in listStatus" @click="$event.stopPropagation()">
+                    <label :for="sta">
+                      <input v-if="sta != null" :id="status" type="checkbox" :value="key"  v-model="status_filter" @change="statusFilter()">
+                      {% raw %}{{sta}}{% endraw %}
+                    </label>
+                  </div>
+                  <div>
+                    <button class="btn btn-sm btn-success" @click="statusSelectAll()" >Select all</button>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3 dropdown">
+                <button type="button" class="btn btn-custom btn-custom--primary__color btnLowerCase" id="dateFilter"
+                        data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                  <i class="material-icons">date_range</i>
+                  <span>{% raw %}{{ langChoose =='ja' ? '年月' : 'Date'}}{% endraw %}</span>
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dateFilter">
+                  <div>
+                    <label>{% raw %}{{ langChoose =='ja' ? '開始日' : 'Date from'}}{% endraw %} </label>
+                    <div class="form-group">
+                      <input class="form-control" type="date" v-model="dateFrom" @change="dateFilter">
+                    </div>
+                  </div>
+                  <div>
+                    <label>{% raw %}{{ langChoose =='ja' ? '終了日' : 'Date to'}}{% endraw %}</label>
+                    <div class="form-group">
+                      <input class="form-control" type="date" v-model="dateTo" @change="dateFilter">
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+                <button v-show="!cate_name" type="button" class="btn btn-custom btn-md btnLowerCase" style="background: #086799 !important;" >
+                  <span>{% raw %}{{ langChoose =='ja' ? '検索' : 'Search'}}{% endraw %}</span>
+                </button>
+                <button  @click="refreshSearchName()" v-show="cate_name" type="button" class="btn btn-custom btn-md btnLowerCase" style="background: #086799 !important;" >
+                  <img src="../static/imgs/reload.png" alt=""><span>     {% raw %}{{ langChoose =='ja' ? '更新' : 'Refresh'}}{% endraw %}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="content__table" style="height: 80vh;">
+            <div class="card" style="margin-top: 0px; margin-bottom: 0!important; overflow: hidden; height: 100%;">
+                <div class="toolbar">
+                  <!--        Here you can write extra buttons/actions for the toolbar              -->
+                </div>
+
+                <div class="material-datatables nicescroll-box" style="margin-bottom: 10px; height: 100%;">
+                  <table id="datatables" class="table table-striped table-no-bordered wrap" cellspacing="0"
+                         style="width:100%">
+                      <thead>
+                          <tr>
+                            <th class="text-center" style="min-width: 20px; padding-left: 15px;">
+                              <div class="form-check">
+                                <label>
+                                  <input class="form-check-input" type="checkbox" v-on:change="selectAll"
+                                          v-model="allSelected"/>
+                                  <!-- <span class="form-check-sign"> -->
+                                  <!-- <span class="check"></span> -->
+                                  <span class="checkmark"></span>
+                                </span>
+                                </label>
+                              </div>
+                            </th>
+                            <th class="text-left" style="max-width: 300px;padding-left: 15px;">{% raw %}{{ langChoose =='ja' ? 'ファイル名' : 'File name'}}{% endraw %}  </th>
+                            <th class="text-left" style="max-width: 100px">{% raw %}{{ langChoose =='ja' ? 'ブランド' : 'Brand'}}{% endraw %}</th>
+                            <th class="text-left" style="max-width: 100px">{% raw %}{{ langChoose =='ja' ? 'ドキュメントＩＤ' : 'Document ID'}}{% endraw %}  </th>
+                            <th class="text-left">{% raw %}{{ langChoose =='ja' ? 'テンプレート' :'Template'}}{% endraw %}</th>
+                            <th class="text-left">{% raw %}{{ langChoose =='ja' ? 'ステータス' :'Status'}}{% endraw %}</th>
+                            <th class="text-left">{% raw %}{{ langChoose =='ja' ? '作成場所' :'Create at'}}{% endraw %}</th>
+                            <th class="text-left" style="max-width: 100px;;">{% raw %}{{ langChoose =='ja' ? 'アクション' :'Action'}}{% endraw %}</th>
+                          </tr>
+                          </thead>
+                    <tbody v-if="isForCar">
+                      <tr v-for="d,key in listFilter"  :class="[d.view_status ? 'font-weight-normal' : 'font-weight-bold', selectedList.includes(d.id) ?'selected':'']" >
+                        <td class="td__content  text-center" :class="d.id? '':'td-brand-header'" style=" padding-left: 15px;">
+                          <div class="form-check">
+                            <label >
+                              <input v-if="d.id" class="form-check-input" type="checkbox" :value="d.id" v-on:change="select(d.id,d.result.brand)"
+                                     v-model="selectedList"/>
+                              <input v-else class="form-check-input" type="checkbox" :value="d.name" v-on:change="selectBrand(d.name)"
+                                     v-model="listSelectBrand"/>
+                              <!-- <span class="form-check-sign">
+                              <span class="check"></span> -->
+                              <span class="checkmark"></span>
+                            </span>
+                            </label>
+                          </div>
+                        </td>
+                        <td class=" td__content text-left" :class="d.id? '':'td-brand-header'" style="max-width: 300px;padding-left: 15px; ">
+                        <span class="td__content-text name">
+                          <a :href="d.id?'/review?id='+packId : '#'">{% raw %}{{d.id? d.name : (d.name+'('+d.count+')')}}{% endraw %}</a>
+                        </span>
+                        </td>
+                        <td v-if="d.id" class=" td__content text-left" style="max-width: 100px">
+                          <span v-if="d.id" class="td__content-text">
+                            {% raw %}{{(d.result &&d['result']['brand'])? d.result.brand : (langChoose =='ja' ? '未知の' :"Unknown")}}{% endraw %}
+                          </span>
+                        </td>
+                        <td v-if="d.id" class=" td__content text-left" style="max-width: 100px">
+                          <span class="td__content-text">
+                            {% raw %}{{d.id}}{% endraw %}
+                          </span>
+                        </td>
+                      </td>
+                      <td v-if="d.id" class=" td__content text-left">
+                        <select v-if="d.type == null || checkFormat(d.type)" class="form-control td__content-text"
+                                v-model="d.type" style="color: #086799; width: 70%;"
+                                :class="d.error ? 'is-invalid' : ''">
+                          <option :value="null"></option>
+                          <option v-for="f in formats" :value="f.name">
+                            {% raw %}{{showTemplate(f.name)}}{% endraw %}
+                          </option>
+                        </select>
+                        <span class="td__content-text" v-else>{% raw %}{{showTemplate(d.type)}}{% endraw %}</span>
+                      </td>
+                        <td v-if="d.id" class="td__content text-left">
+                          <!-- <div v-if="d.status == 0" class="progress candy" data-width="100%">
+                            <div class="progress-bar" style="width: 100%;"></div>
+                          </div> -->
+                          <span  class="td__content-text">
+                                <!-- :class="d.status == 3 ? 'processing' : d.status == 1 ? 'success' : 'error'"> -->
+                            {% raw %}{{showStatus(d.status)}}{% endraw %}
+                          </span>
+                        <td v-if="d.id" class="td__content text-left">
+                         <span class="td__content-text">
+                          {% raw %}{{prettyDate(d.created_at)}}{% endraw %}
+                         </span>
+                        </td>
+                        <td v-if="d.id" style="padding-right: 15px;">
+                          <div class="row" style="display: flex; align-items: center; justify-content: space-around;
+                          padding-right: inherit;
+                          ">)
+                              <button type="button" class="btn-icon" v-on:click="reRunOCR(key)">
+                                <!-- <img src="../static/imgs/exporticon.png"> -->
+                                <span class="material-icons icon" :class="selectedList.includes(d.id) ? 'icon-selected' : 'icon-unselected' ">
+                                  autorenew
+                                  </span>
+                              </button>
+                              <button type="button" class="btn-icon" v-on:click="exportDataByKey(key)">
+                                <!-- <img src="../static/imgs/exporticon.png"> -->
+                                <span class="material-icons icon" :class="selectedList.includes(d.id) ? 'icon-selected' : 'icon-unselected' ">
+                                  cloud_download
+                                  </span>
+                              </button>
+                              <button type="button" class="btn-icon" v-on:click="deleteFile(key)">
+                                <span class="material-icons icon" :class="selectedList.includes(d.id) ? 'icon-selected' : 'icon-unselected' ">
+                                  delete
+                                  </span>
+                              </button>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                    <tbody v-else>
+                        <tr v-for="d,key in listFilter"  :class="[d.view_status ? 'font-weight-normal' : 'font-weight-bold', selectedList.includes(d.id) ?'selected':'']" >
+                          <td class="td__content  text-center" style=" padding-left: 15px;">
+                            <div class="form-check">
+                              <label >
+                                <input class="form-check-input" type="checkbox" :value="d.id" v-on:change="select"
+                                       v-model="selectedList"/>
+                                <!-- <span class="form-check-sign">
+                                <span class="check"></span> -->
+                                <span class="checkmark"></span>
+                              </span>
+                              </label>
+                            </div>
+                          </td>
+                          <td class=" td__content text-left" style="max-width: 300px;padding-left: 15px; ">
+                          <span class="td__content-text name">
+                            <a :href="'/review?id='+packId">{% raw %}{{d.name}}{% endraw %}</a>
+                          </span>
+                          </td>
+                          <td class=" td__content text-left" style="max-width: 100px">
+                            <span class="td__content-text">
+                              {% raw %}{{(d.result &&d['result']['brand'])? d.result.brand : (langChoose =='ja' ? '未知の' :"Unknown")}}{% endraw %}
+                            </span>
+                          </td>
+                          <td class=" td__content text-left" style="max-width: 100px">
+                            <span class="td__content-text">
+                              {% raw %}{{d.id}}{% endraw %}
+                            </span>
+                          </td>
+                        </td>
+                        <td class=" td__content text-left">
+                          <select v-if="d.type == null || d.type == 'unselected' || checkFormat(d.type)" class="form-control td__content-text"
+                                  v-model="d.type" style="color: #086799; width: 70%;"
+                                  :class="d.error ? 'is-invalid' : ''">
+                            <option :value="null"></option>
+                            <option v-for="f in formats" :value="f.name">
+                              {% raw %}{{showTemplate(f.name)}}{% endraw %}
+                            </option>
+                          </select>
+                          <span class="td__content-text" v-else>{% raw %}{{showTemplate(d.type)}}{% endraw %}</span>
+                        </td>
+                          <td class="td__content text-left">
+                            <!-- <div v-if="d.status == 0" class="progress candy" data-width="100%">
+                              <div class="progress-bar" style="width: 100%;"></div>
+                            </div> -->
+                            <span  class="td__content-text">
+                                  <!-- :class="d.status == 3 ? 'processing' : d.status == 1 ? 'success' : 'error'"> -->
+                              {% raw %}{{showStatus(d.status)}}{% endraw %}
+                            </span>
+                          <td class="td__content text-left">
+                           <span class="td__content-text">
+                            {% raw %}{{prettyDate(d.created_at)}}{% endraw %}
+                           </span>
+                          </td>
+                          <td style="padding-right: 15px;">
+                            <div class="row" style="display: flex; align-items: center; justify-content: space-around;
+                            padding-right: inherit;
+                            ">
+                                <button type="button" class="btn-icon" v-on:click="reRunOCR(key)">
+                                  <!-- <img src="../static/imgs/exporticon.png"> -->
+                                  <span class="material-icons icon" :class="selectedList.includes(d.id) ? 'icon-selected' : 'icon-unselected' ">
+                                    autorenew
+                                    </span>
+                                </button>
+                                <button type="button" class="btn-icon" v-on:click="exportDataByKey(key)">
+                                  <!-- <img src="../static/imgs/exporticon.png"> -->
+                                  <span class="material-icons icon" :class="selectedList.includes(d.id) ? 'icon-selected' : 'icon-unselected' ">
+                                    cloud_download
+                                    </span>
+                                </button>
+                                <button type="button" class="btn-icon" v-on:click="deleteFile(key)">
+                                  <span class="material-icons icon" :class="selectedList.includes(d.id) ? 'icon-selected' : 'icon-unselected' ">
+                                    delete
+                                    </span>
+                                </button>
+                            </div>
+                          </td>
+                        </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <transition name="fade">
+                  <div v-if="selectedList.length > 0" class="choosing-panel">
+                    <p class="documents-amount" style="margin-bottom: 0px; padding-top: 0px;">
+                      {% raw %}{{langChoose =='ja'?'この' :'Select ' }}{% endraw %} <strong>{% raw %}{{selectedList.length}}{% endraw %}</strong>{% raw %}{{langChoose =='ja'? '部の書類を選択しても宜しいですか。' : ' documents' }}{% endraw %} 
+                      <!-- Sellect <strong>{% raw %}{{selectedList.length}}{% endraw %}</strong> documents  -->
+                    </p> 
+                    <button type="button" class="btn-icon" v-on:click="reRunOCR()">
+                      <span class="material-icons icon icon-selected">
+                        autorenew
+                        </span>
+                    </button>
+                    <button type="button" class="btn-icon" v-on:click="exportData">
+                      <span class="material-icons icon icon-selected">
+                        cloud_download
+                        </span>
+                    </button>
+                    <button type="button" class="btn-icon" v-on:click="deleteSelected">
+                      <span class="material-icons icon icon-selected">
+                        delete
+                        </span>
+                    </button>
+                    <button type="button" class="close" @click="selectedList = []; listSelectBrand = [];allSelected = false; $('tr').removeClass('selected');">
+                      <span aria-hidden="true"><img src="../static/imgs/close.png" alt=""></span>
+                      <span class="sr-only">Close</span>
+                    </button>
+                  </div>
+                  </transition>
+                <nav>
+                  <ul class="pagination justify-content" style="justify-content: center">
+                  <li style="position: absolute; left: 10px ;display: flex; width: 200px;">
+                    <select class="form-control" style="font-size: 15px; font-weight: bold; color: #086799!important; padding: 0px 8px !important; height: 32px!important; width: auto;" v-model="size" @change="changePagesize">
+                      <option value="-1">ALL</option>
+                      <option value="10">10</option>
+                      <option value="20">20</option>
+                      <option value="50">50</option>
+                      <option value="100">100</option>
+                    </select>
+                    <p v-if="window.screen.width > 524" style="font-family:Noto Sans JP;
+                    font-style: normal;
+                    font-weight: normal;
+                    font-size: 14px;
+                    line-height: 30px;
+                    text-align: center;
+                    color: rgb(124, 151, 177);
+                    margin-bottom: 0px;
+                    height: 100%;
+                    width: 100%;
+                    padding-left: 10px;">{% raw %}{{ langChoose =='ja'? 'ページ毎のエントリー数':'Entries per page'}}{% endraw %} </p>
+                  </li>
+                    <!-- <li> <a @click="first"> << </a></li> -->
+                    <li style="height: fit-content;"><a @click="prev"> < </a></li>
+                    <li style="height: fit-content;" v-for="p in showPage" :class="pageNo == p ? 'active' : ''">
+                      <a  @click="page(p)">{% raw %}{{p}}{% endraw %}</a>
+                    </li>
+                    <li style="height: fit-content;"><a @click="next"> > </a></li>
+                    <!-- <li style="height: fit-content;">
+                      <div class="upload__icon" style="cursor: pointer;display: flex;width: 8rem; height: 3rem; position: absolute; right: 30px;" v-on:click="selectFile()">
+                        Add new files <img src="../static/imgs/combine.png" alt=""/>
+                      </div>
+                      <input type="file" id="files" ref="files" v-on:change="handleFilesUpload()" hidden multiple accept="image/*, application/pdf"/>
+                    </li> -->
+                  </ul>
+                </nav>
+              <!-- end content-->
+            </div>
+            <!--  end card  -->
+      </div>
+    </div>
+    <!-- <div class="modal fade" id="alert" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-body" style="text-align: center">
+            <h3 style="font-weight: bold; color: red;">テンプレートをご指定ください</h3>
+          </div>
+        </div>
+      </div>
+    </div> -->
+    <!-- modal notice  -->
+    <div class="modal fade bd-example-modal-lg" id="alert" data-keyboard="false" data-backdrop="static" tabindex="-1" role="" aria-labelledby="myModalLabel" aria-modal="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered" role="document" style="margin-top: 0px;">
+        <div class="rectangle-139 modal-content" style="border-radius: 16px;">
+          <div class="modal-body">
+            <div class="modal-header" style="
+            flex-direction: column;
+            padding-top: 0px;
+            align-items: center;"
+            >
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true"><img src="../static/imgs/close.png" alt=""></span>
+                <span class="sr-only">Close</span>
+              </button>
+              <img src="../static/imgs/icondanger.png" alt="">
+              <p style="text-align: center; font-size: 20px; width: 100%; font-weight: bold; line-height: 23px; color: #2D4761;">
+                {% raw %}{{ langChoose =='ja' ? '本気ですか？' : 'Are you sure?' }}{% endraw %}
+              </h2>
+            </div>
+            <div class="modal-body" style="
+                height: 55%;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                padding-top: 20px;
+            ">
+                <span style=" padding-left: 17%;
+                font-weight: bold;
+                font-size: 16px;
+                line-height: 19px;
+                color: #7C97B1;
+                height: 0px;">
+                  {% raw %}{{ langChoose =='ja' ? 'ドキュメント＃' : 'Are you sure delete ' }}{% endraw %} <strong>{% raw %} {{name_delete}} {% endraw %}{% raw %}{{ langChoose =='ja' ? 'を削除しますか。' : '' }}{% endraw %} </strong>?
+                </span>
+                <span style="  padding-left: 17%;height: 40px;;font-size: 16px; line-height: 19px;color: #7C97B1;">{% raw %}{{ langChoose =='ja' ? '書類削除を実行すると復旧することが出来なくなります。.':'If you delete the document you can’t revocer it.'}}{% endraw %}</span>
+                <div style="    
+                display: flex;
+                justify-content: space-evenly;">
+                  <button class="btn btn-md " type="button"  style=" font-size: 14px; height: 4.5rem; color: #7C97B1; width: 180px; background-color:  #E9F0F6; border-radius: 4px;"  data-dismiss="modal"> {% raw %}{{ langChoose =='ja' ? 'キャンセル' : 'Cancel' }}{% endraw %}</button>
+                  <button type="submit" @click="confirmDelete()" class="btn btn-md" style="font-size: 14px; height: 4.5rem; color: #fff; width: 180px; background-color: #FF4461; border-radius: 4px;">{% raw %}{{ langChoose =='ja' ? '削除':'Delete' }}{% endraw %} </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    <!-- end moda notice  -->   
+
+    <!-- modal upload  -->
+    <div class="modal fade" id="upload_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+      <div class="modal-dialog " role="document">
+        <div class="modal-content" style=" width: 626px; height: 347px; border-radius: 16px;">
+          <div class="modal-body">
+            <div class="modal-header" style="
+            flex-direction: column;
+            padding-top: 0px;
+            align-items: center;"
+            >
+              <button type="button" class="close" @click="clear()" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true"><img src="../static/imgs/close.png" alt=""></span>
+                <span class="sr-only">Close</span>
+              </button>
+              <img src="../static/imgs/document.png" alt="">
+              <p style="text-align: center; font-size: 20px; width: 100%; font-weight: bold; line-height: 23px; color: #2D4761;">
+                {% raw %}{{ langChoose =='ja' ? 'よろしいですか？' : 'Are you sure?' }}{% endraw %}
+              </h2>
+            </div>
+            <div class="modal-body" style="
+                height: 75%;
+                display: grid;
+                align-content: normal;
+                padding-top: 20px;
+            ">
+                <p style="text-align: center; 
+                font-weight: bold;
+                font-size: 16px;
+                line-height: 19px;
+                color: #7C97B1;">
+                  Add<span>{% raw %} {{name_upload}} {% endraw %}</span>  to  {% raw %} {{packageName}} {% endraw %} ?
+                </p>
+                <div style="    
+                display: flex;
+                justify-content: space-evenly;">
+                  <button class="btn btn-md " type="button" @click="clear()"  style=" font-size: 14px; height: 4.5rem; color: #7C97B1; width: 180px; background-color:  #E9F0F6; border-radius: 4px;"  data-dismiss="modal">Cancel</button>
+                  <button type="submit" @click="submitFiles()" class="btn btn-md" style="font-size: 14px; height: 4.5rem; color: #fff; width: 180px; border-radius: 4px;">Upload</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    <!-- end moda upload  -->
+
+
+  </div>
+
+
+  <script src="../static/js/jquery.nicescroll.min.js"></script>
+  <script src="../static/js/socket.io.js"></script>
+  <script src="../static/js/file_list.js?v=123"></script>
+{% endblock content %}

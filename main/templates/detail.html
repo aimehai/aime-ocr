@@ -1,0 +1,128 @@
+{% extends "layout.html" %}
+{% block content %}
+  <script>
+    var localData = {{ data | tojson }};
+  </script>
+  <div id="detail" class="container">
+
+    <div class="content">
+      <div class="content__header row">
+        <div class="col-md-12" style="margin-top: 10px; padding-top: 25px; margin-bottom: 20px">
+          <div class="content__button">
+            <div class="row">
+              <div class="col-xs-12 col-sm-12 col-md-7 col-lg-7">
+                <div class="row">
+                  <div class="col-md-3">
+                    <button type="button" class="btn btn-custom btn-custom--secodary__color" @click="deleteResult()">
+                      <i class="material-icons">delete_outline</i>
+                      <span>削除</span>
+                    </button>
+                  </div>
+                  <div class="col-md-3">
+                    <button type="button" class="btn btn-md btn-custom btn-custom--secodary__color"
+                            @click="redirect('/result?id='+data[current]['id'])">
+                      <img src="static/imgs/pen.png" alt=""/>
+                      <span>編集</span>
+                    </button>
+                  </div>
+                  <div class="col-md-3">
+                    <button type="button" class="btn btn-custom btn-custom--secodary__color" @click="showKeyVal()">
+                      <i class="material-icons">search</i>
+                      <span>項目抽出</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xs-12 col-sm-12 col-md-5 col-lg-5" style="position: relative">
+                <h2 style="font-weight: 600; position: absolute; bottom: 0; right: 15px">{% raw %}{{data[current]['name']}}{% endraw %}</h2>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="content__preview" style="height: 600px; padding-top: 10px; padding-bottom: 5px">
+        <div class="row">
+          <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="row">
+              <div class="col-xs-12 col-sm-12 col-md-6" v-cloak>
+                <img
+                  :src="data[current]['output_path'] != null ? 'static/uploaded/'+data[current]['output_path'] : 'static/uploaded/'+data[current]['raw_path']"
+                  @click="showImg(data[current]['output_path'] != null ? 'static/uploaded/'+data[current]['output_path'] : 'static/uploaded/'+data[current]['raw_path'])"
+                  alt="" style="max-width: 100%; max-height: 550px"/>
+              </div>
+              <div class="col-xs-12 col-sm-12 col-md-6">
+                <div style="max-width: 100%; height: 550px" id="draw-content" @click="showSVG()"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-preview">
+      <div class="row">
+        <div class="col-md-1 col-lg-1" style="vertical-align: middle">
+          <button class="am-prev btn__aminate btn__aminate--transparent" v-on:click="prevImg()">
+            <div class="btn__aminate-image--custom">
+              <img src="static/imgs/prev.png" alt="" style="max-width: 100%;"/>
+            </div>
+          </button>
+        </div>
+        <div class="col-xs-10 col-md-10 col-lg-10">
+          <div class="owl-carousel">
+            <div v-for="d, id in data" style="cursor: pointer; height: 100px" v-on:click="selectImg(id)" class="row preview__content"
+                 :class="id == current ? 'selected' : ''">
+              <div class="col-md-6">
+                <img :src="'static/uploaded/'+d['raw_path']" alt="" style="max-height: 80px; max-width: 100%"/>
+              </div>
+              <div class="col-md-6">
+                <div class="preview__text">
+                  <span data-toggle="tooltip" :title="d.name"> {% raw %}{{d.name}}{% endraw %}</span>
+                  <span>{% raw %}{{prettyDate(d.created_at)}}{% endraw %}</span>
+                  <span>{% raw %}{{d.type}}{% endraw %}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-1 col-lg-1" style="vertical-align: middle">
+          <button class="am-next btn__aminate btn__aminate--transparent" v-on:click="nextImg()">
+            <div class="btn__aminate-image--custom">
+              <img src="static/imgs/next.png" alt="" style="max-width: 100%;"/>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade" id="show-table" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog" style="min-width: 400px; width: 60%">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">
+              <span aria-hidden="true">×</span>
+              <span class="sr-only">Close</span>
+            </button>
+          </div>
+          <div class="modal-body" style="padding: 10px 5px">
+            <table class="table table-bordered" v-if="data[current]['result'] != null">
+              <tr v-for="key in Object.keys(data[current]['result']['extracted'])">
+                <td style="font-weight: bold;  text-align: center; cursor: pointer" @click="selectRect(f, $event)">{% raw %}{{key}}{% endraw %}</td>
+                <td>
+                  <div v-for="dx in data[current]['result']['extracted'][key]">
+                      <input v-for="dy in dx" v-model="dy['text']" class="form-control form-inline" style="width: 80%; margin-bottom: 10px">
+                  </div>
+                </td>
+                <td>
+                  <button class="btn btn-sm btn-danger" @click="rect.removeLabel(f)"><i class="material-icons">delete</i></button>
+                </td>
+              </tr>
+            </table>
+          </div>
+          <div class="modal-footer" style="text-align: center">
+            <button class="btn btn-sm btn-info" style="font-size: 18px" @click="exportExtract()">CSV出力</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="static/js/detail.js?v=29052"></script>
+{% endblock content %}

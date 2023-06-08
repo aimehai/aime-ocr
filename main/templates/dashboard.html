@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+  <title>
+    Aminext Dashboard
+  </title>
+  <meta
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no"
+      name="viewport"
+  />
+  <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:400,700|Material+Icons"
+  />
+  <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css"
+  />
+  <!-- CSS Files -->
+  <link href="static/assets/css/dashboard.min.css" rel="stylesheet"/>
+  <!-- CSS Just for demo purpose, don't include it in your project -->
+  
+  <link href="static/assets/demo/demo.css" rel="stylesheet"/>
+  <link href="static/assets/css/custom.css" rel="stylesheet"/>
+</head>
+
+<body class="">
+<div class="wrapper">
+  <div class="sidebar" style="background-color:#fff;padding: 20px">
+    <div class="logo">
+      <div class="menu-logo">
+        <a href="#"> <img src="{{ url_for('static', filename='static/imgs/logo.png') }}"/></a>
+      </div>
+      <div class="menu-icon">
+        <button id="minimizeSidebar" class="btn btn-just-icon btn-white btn-fab btn-round">
+          <img src="static/assets/img/group8.png" alt=""/>
+        </button>
+      </div>
+    </div>
+    <div class="sidebar-wrapper">
+      <ul class="nav">
+        <li class="nav-item active ">
+          <a class="nav-link" href="#">
+            <i class="aminext-icon"><img src="{{ url_for('static', filename='imgs/home.png') }}" alt=""/></i>
+            <p>ダッシュボード</p>
+          </a>
+        </li>
+        <li class="nav-item ">
+          <a class="nav-link" data-toggle="collapse" href="#pagesExamples">
+            <i class="aminext-icon"><img src="{{ url_for('static', filename='imgs/header.png') }}" alt=""/></i>
+            <p>AIME-OCR 認識</p>
+          </a>
+          <div class="collapse" id="pagesExamples">
+            <ul class="nav">
+              <li class="nav-item ">
+                <a class="nav-link" href="#">
+                  <span class="sidebar-normal"> 帳票 </span>
+                </a>
+              </li>
+              <li class="nav-item ">
+                <a class="nav-link" href="../examples/pages/rtl.html">
+                  <span class="sidebar-normal"> ナンバープレート </span>
+                </a>
+              </li>
+              <li class="nav-item ">
+                <a class="nav-link" href="../examples/pages/timeline.html">
+                  <span class="sidebar-normal"> 運転免許証 </span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </li>
+        <li class="nav-item ">
+          <a class="nav-link" data-toggle="collapse" href="#componentsExamples">
+            <i class="aminext-icon"><img src="{{ url_for('static', filename='imgs/document.png') }}" alt=""/></i>
+            <p>ファイルマスター</p>
+          </a>
+          <div class="collapse" id="componentsExamples">
+            <ul class="nav">
+              <li class="nav-item ">
+                <a
+                    class="nav-link"
+                    data-toggle="collapse"
+                    href="#componentsCollapse"
+                >
+                  <span class="sidebar-normal"> ファイル一覧 </span>
+                </a>
+                <div class="collapse" id="componentsCollapse">
+                  <ul class="nav">
+                    <li class="nav-item ">
+                      <a class="nav-link" href="#0">
+                        <span class="sidebar-normal"> ファイル設定 </span>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </li>
+              <li class="nav-item ">
+                <a
+                    class="nav-link"
+                    href="../examples/components/buttons.html"
+                >
+                  <span class="sidebar-normal"> ファイル設定 </span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </li>
+        <li class="nav-item ">
+          <a class="nav-link" data-toggle="collapse" href="#formsExamples">
+            <i class="aminext-icon"
+            ><img src="static/imgs/download.png" alt=""
+            /></i>
+            <p>出力ファイルマスター</p>
+          </a>
+          <div class="collapse" id="formsExamples">
+            <ul class="nav">
+              <li class="nav-item ">
+                <a class="nav-link" href="#">
+                  <span class="sidebar-normal">ファイル一覧</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </li>
+        <li class="nav-item ">
+          <a class="nav-link" data-toggle="collapse" href="#tablesExamples">
+            <i class="aminext-icon"
+            ><img src="static/imgs/setting.png" alt=""
+            /></i>
+            <p>設定</p>
+          </a>
+          <div class="collapse" id="tablesExamples">
+            <ul class="nav">
+              <li class="nav-item ">
+                <a class="nav-link" href="../examples/tables/regular.html">
+                  <span class="sidebar-normal"> 認識フォーマット設定 </span>
+                </a>
+              </li>
+              <li class="nav-item ">
+                <a class="nav-link" href="../examples/tables/extended.html">
+                  <span class="sidebar-normal"> アンケート</span>
+                </a>
+              </li>
+              <li class="nav-item ">
+                <a
+                    class="nav-link"
+                    href="../examples/tables/datatables.net.html"
+                >
+                  <span class="sidebar-normal">ログアウト </span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </li>
+        <li class="nav-item ">
+          <a class="nav-link" data-toggle="collapse" href="#mapsExamples">
+            <i class="aminext-icon"
+            ><img src="static/imgs/book.png" alt=""
+            /></i>
+            <p>利用マニュアル</p>
+          </a>
+          <div class="collapse" id="mapsExamples">
+            <ul class="nav">
+              <li class="nav-item ">
+                <a class="nav-link" href="../examples/maps/google.html">
+                  <span class="sidebar-normal"> 案内</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </li>
+      </ul>
+      <div class="text-center">
+            <span class="align-bottom"
+            >AIME OCR Version 1.1 <br/>Copyright © AIMENEXT 2020.</span
+            >
+      </div>
+    </div>
+  </div>
+  <div class="main-panel">
+    <!-- Navbar -->
+    <nav
+        class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top "
+    >
+      <div class="container-fluid">
+        <div class="navbar-wrapper">
+          <h2 class="navbar__title">AIME-OCR認識 / <span> 帳票</span></h2>
+        </div>
+        <button
+            class="navbar-toggler"
+            type="button"
+            data-toggle="collapse"
+            aria-controls="navigation-index"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+        >
+          <span class="sr-only">Toggle navigation</span>
+          <span class="navbar-toggler-icon icon-bar"></span>
+          <span class="navbar-toggler-icon icon-bar"></span>
+          <span class="navbar-toggler-icon icon-bar"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-end">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <span class="nav-item__name">Hiroyuki</span>
+            </li>
+            <li class="nav-item dropdown">
+              <a href="#" class="nav-item__avatar" data-toggle="dropdown"
+                  aria-haspopup="true"
+                  aria-expanded="false">
+                <img
+                    src="./static/assets/img/2e58308e4fbd0edd70920ad0be58d093.png"
+                    alt=""
+                />
+              </a>
+              
+              <div
+                  class="dropdown-menu dropdown-menu-right"
+                  aria-labelledby="navbarDropdownProfile"
+              >
+                <a class="dropdown-item" href="#">Profile</a>
+                <a class="dropdown-item" href="#">Settings</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#">Log out</a>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <!-- End Navbar -->
+    
+    <a class="btn__aminate btn__upload" href="#">
+      <div class="btn__aminate-image">
+        <img src="./static/assets/img/shap5.png" alt="" class=""/>
+      </div>
+    </a>
+    <footer class="footer">
+      <div class="container-fluid"></div>
+    </footer>
+  </div>
+</div>
+
+<!--   Core JS Files   -->
+<script src="static/assets/js/core/jquery.min.js"></script>
+<script src="static/assets/js/core/popper.min.js"></script>
+<script src="static/assets/js/core/bootstrap-material-design.min.js"></script>
+<script
+    src="static/assets/js/material-dashboard.min.js?v=2.1.0"
+    type="text/javascript"
+></script>
+<!-- Material Dashboard DEMO methods, don't include it in your project! -->
+<script src="static/assets/demo/demo.js"></script>
+<script>
+      $(document).ready(function() {
+        $().ready(function() {
+          $sidebar = $(".sidebar");
+
+          $sidebar_img_container = $sidebar.find(".sidebar-background");
+
+          $full_page = $(".full-page");
+
+          $sidebar_responsive = $("body > .navbar-collapse");
+
+          window_width = $(window).width();
+
+          fixed_plugin_open = $(
+            ".sidebar .sidebar-wrapper .nav li.active a p"
+          ).html();
+
+          if (window_width > 767 && fixed_plugin_open == "Dashboard") {
+            if ($(".fixed-plugin .dropdown").hasClass("show-dropdown")) {
+              $(".fixed-plugin .dropdown").addClass("open");
+            }
+          }
+        });
+      });
+
+</script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="content">
+  <div class="container">
+    <div class="card">
+      <div class="card-body">
+        <div class="card-around">
+          <button
+              type="button"
+              class="btn btn-custom--large btn-custom--secodary__color"
+          >
+            <img src="static/imgs/header1.png" alt=""/>
+            <span class="lang" key="ocr">AIME-OCR認識</span>
+          </button>
+          <div class="round-view">
+            <div class="row">
+              <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                <a class="round__btn--center" href="/report">
+                  <span class="lang" key="report">帳票</span>
+                </a>
+              </div>
+              <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                <a class="round__btn--center disabled" href="#">
+                  <span class="lang" key="license_plate">ナンバープレート</span>
+                </a>
+              </div>
+              <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                <a class="round__btn--center disabled" href="#">
+                  <span class="lang" key="driver_license">運転免許証</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}

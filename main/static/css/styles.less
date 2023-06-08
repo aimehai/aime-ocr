@@ -1,0 +1,385 @@
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  font-family: Noto Sans JP, serif;
+  font-size: 14px;
+}
+
+#login-page {
+  display: flex;
+
+  .login {
+    width: 41.66666666666667%;
+    height: 100vh;
+    background: #FFF;
+    padding: 50px;
+    display: block;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    text-align: center;
+
+    a {
+      margin-top: 25px;
+    }
+
+    .login-title {
+      max-width: 30%;
+      margin: 8% auto 30px auto;
+
+      img {
+        width: 100%;
+      }
+    }
+
+    .form-login {
+      width: 70%;
+      text-align: left;
+      margin: auto;
+
+      label {
+        font-style: normal;
+        font-weight: normal;
+        line-height: 20px;
+        color: #063D59;
+      }
+
+      .form-group {
+        margin: 20px 10px;
+      }
+
+      .form-control {
+        width: 100%;
+        line-height: 10px;
+        height: 48px;
+        background: #FCFDFE;
+        border: 2px solid #C7E2F0;
+        box-sizing: border-box;
+        border-radius: 4px;
+      }
+
+      .btn-login {
+        width: 100%;
+        background: #086799;
+        border-radius: 4px;
+        color: white;
+        padding: 15px;
+        font-size: 16px;
+      }
+    }
+
+    .footer {
+      margin-top: 10%;
+
+      p {
+        color: #063D59;
+      }
+    }
+  }
+
+  .background {
+    width: 58.33333333333334%;
+    padding: 40px;
+    height: 100vh;
+    display: block;
+    background: url("../imgs/login-bg.png") center no-repeat;
+    background-size: cover;
+    align-content: center;
+
+    .content {
+      color: #fff;
+      position: relative;
+      text-align: center;
+
+      .title {
+        font-size: 5rem;
+        font-weight: bold;
+        text-align: center;
+        width: 500px;
+        margin: 15% auto 30px auto;
+        position: relative;
+
+        &:before {
+          position: absolute;
+          font-size: 8rem;
+          color: transparent;
+          content: '1';
+          background-image: url('../imgs/bracket2.png');
+          background-size: contain;
+          background-repeat: no-repeat;
+          top: -8px;
+          left: 0;
+        }
+
+        &:after {
+          position: absolute;
+          font-size: 8rem;
+          color: transparent;
+          content: '1';
+          background-image: url('../imgs/bracket1.png');
+          background-size: contain;
+          background-repeat: no-repeat;
+          top: -8px;
+        }
+      }
+
+      .sub-title {
+        margin: auto;
+        width: 130px;
+        font-size: 20px;
+        background-color: #fff;
+        color: #086799;
+        font-weight: bold;
+        border-radius: 10px;
+        padding: 5px 20px;
+      }
+    }
+  }
+}
+
+#main-container {
+
+  h1 {
+    color: #fff;
+    margin: 30px auto;
+    display: table;
+  }
+
+  .leftMenu {
+    height: 100%;
+    background-color: #ffffff;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 50px;
+    overflow: hidden;
+    transition: .5s cubic-bezier(.8, .5, .2, 1.4);
+  }
+
+  .hamburger {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #ffc107;
+    float: right;
+    margin-right: 5px;
+    margin-top: 5px;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: 0px 3px 4px rgba(0, 0, 0, .5);
+    position: relative;
+    transform: rotate(0deg);
+  }
+
+  .hamburger.open {
+    background-color: tomato;
+    transition: all ease .5s;
+  }
+
+  .hamburger:hover {
+    box-shadow: none;
+    transition: all ease .5s;
+    transform: rotate(360deg);
+
+  }
+
+  .hamburger span {
+    width: 60%;
+    height: 3px;
+    background-color: #000;
+    display: block;
+    border-radius: 1px;
+    float: left;
+    margin-left: 20%;
+    transition: all ease .3s;
+  }
+
+  .hamburger span:nth-child(1) {
+    margin-top: 13px;
+  }
+
+  .hamburger span:nth-child(2) {
+    margin-top: 3px;
+  }
+
+  .hamburger span:nth-child(3) {
+    margin-top: 3px;
+  }
+
+  .open span:nth-child(1) {
+    background-color: #fff;
+    transform: rotate(45deg);
+    transition-timing-function: ease-in-out;
+    position: absolute;
+    top: 5px;
+    right: 8px;
+    width: 25px;
+    transition: all ease .5s;
+    border-radius: 10px;
+  }
+
+  .open span:nth-child(2) {
+    background-color: #fff;
+    transition-timing-function: ease-in-out;
+    margin-top: 18px;
+    opacity: 0;
+    transition: all ease .5s;
+  }
+
+  .open span:nth-child(3) {
+    background-color: #fff;
+    transform: rotate(-45deg);
+    transition-timing-function: ease-in-out;
+    margin-top: 0px;
+    position: absolute;
+    top: 18px;
+    right: 8px;
+    width: 25px;
+    transition: all ease .5s;
+    border-radius: 10px;
+  }
+
+  .openMenu {
+    width: 250px;
+    transition: all ease 1s;
+    overflow: hidden;
+    transition: .5s cubic-bezier(.8, .5, .2, 1.4);
+  }
+
+  .leftMenuList {
+    margin-top: 70px;
+    list-style: none;
+    padding: 0;
+  }
+
+  .leftMenuList li {
+    width: 250px;
+    /* height: 40px; */
+    line-height: 40px;
+    color: #fff;
+    border-bottom: 1px solid #00bcd6;
+    /* padding : 5px; */
+    font-size: 13px;
+  }
+
+  .leftMenuList li:hover {
+    background-color: #00bcd6;
+    transition: all ease .5s;
+    cursor: pointer;
+
+  }
+
+  .leftMenuList li a {
+    text-decoration: none;
+    color: #fff;
+  }
+
+  .leftMenuList li a svg {
+    width: 40px;
+    height: 40px;
+    float: left;
+    margin-left: 0px;
+  }
+
+  .leftMenuList li a span {
+    text-decoration: none;
+    color: #fff;
+    margin-left: 15px;
+    width: 100%;
+  }
+
+  .leftMenuList i.fa {
+    font-size: 25px;
+    padding: 9px;
+    width: 30px;
+    text-align: center;
+  }
+
+  .leftMenuList li ul li {
+    padding: 0px;
+    line-height: 30px;
+    transition: all .4s;
+    box-sizing: border-box;
+  }
+
+
+  .leftMenuList li ul li:hover {
+    background: #4DD0E1;
+    transition: all .4s;
+
+  }
+
+  .leftMenuList li ul li ul li {
+    padding: 5px;
+    background: #B2EBF2;
+  }
+
+  .leftMenuList li ul li ul li a span {
+    color: #00838f;
+  }
+
+  .leftMenuList li ul li ul li:hover {
+    background: #B2EBF2;
+  }
+
+  .dropdown {
+    color: #fff;
+    text-decoration: none;
+    margin-bottom: 5px;
+    display: block;
+    position: relative;
+  }
+
+  .active + .dropdownlist {
+    width: 100%;
+    height: auto;
+    line-height: 30px;
+    padding: 0px;
+    margin-left: 0px;
+    background: #4DD0E1;
+
+  }
+
+  .hide + .dropdownlist {
+    height: 0px;
+  }
+
+  .active + .dropdownlist:hover {
+    background: #00bcd6;
+  }
+
+  .dropdownlist {
+    width: 0;
+    height: 0;
+    overflow: hidden;
+  }
+
+  .dropdown:before {
+    font-family: FontAwesome;
+    content: "\f105";
+    transition: all .4s;
+    padding-right: 5px;
+    right: 20px;
+    position: absolute;
+    top: 4px;
+  }
+
+  .dropdown.active:before {
+    font-family: FontAwesome;
+    content: '\f107';
+    transition: all .4s;
+    padding-right: 5px;
+
+  }
+
+  .leftMenu:not(.openMenu) li > .dropdownlist {
+    pointer-events: none;
+    height: 0;
+  }
+}
+
+
+

@@ -1,0 +1,408 @@
+{% extends "layout.html" %}
+{% block content %}
+  <style>
+    div.class, div.class > * {
+      color: #086799;
+    }
+    .result-file-status.selected{
+      background-color: #FFFFFF !important;
+    }
+    .buttonfile{
+      padding-top: 15px;
+    }
+    .buttonfile.selected {
+      background: #086799 !important;
+      color: white !important;
+    }
+    .buttonfile:hover img.delete-icon{
+      content:url("../static/imgs/deletewhite.png");
+    }
+    .buttonfile:hover img.rerun-icon{
+      content:url("../static/imgs/rerunwhite.png");
+    }
+    div.selected img.eye-icon{
+      content:url("../static/imgs/eye_white.png");
+    }
+    .hovername{
+      color: white;
+    }
+    .input-cus{
+      width: 100%; 
+      border: unset; 
+      text-align: end;
+      font-size: 14px !important;
+      height: fit-content;
+    }
+    .div-canvas2{
+      width: 100%; 
+      height: 6.5vh; 
+      margin: 0px 10px 0px 10px; 
+      display: flex; 
+      justify-content: center;
+      background: #B4CADF;
+    }
+    .div-canvas2.selected{
+      background: #46C0D2;
+    }
+    .data-div{
+      padding: 6px 0px 0.5vw 0.5vw;
+      /* flex-wrap: nowrap; */
+      margin-bottom: 0px;
+      align-items: center; 
+      cursor: pointer;
+      border-bottom: 1px solid #D9E7F4;
+      width: 100%;
+      margin: unset;
+    }
+    .data-row{
+      width: 100%;
+      margin: unset;
+    }
+    .data-div.selected {
+      background: #086799 !important;
+      color: white;
+    }
+    .result-file-status.hover {
+      background: #ffffff ;
+    }
+    .unselected{
+      color: #B4CADF;
+      cursor: auto;
+    }
+
+    .data-div.unactive {
+      background: #ffffff !important;
+      color: #B4CADF;
+    }
+    .table thead tr th {
+      position: sticky;
+      top: 0;
+    }
+    .text-data-extract{
+      font-family: Roboto;
+      font-style: normal;
+      font-weight: 500;
+      font-size: 14px;
+      line-height: 16px;
+      /* color: #3F3F3F; */
+      padding-left: 10px;
+      cursor: pointer; 
+      display: flex;
+      justify-content: start;
+      align-items: center; 
+      height: 45px; 
+      overflow: hidden; 
+      text-transform: capitalize;
+      text-align: left;
+      margin: auto;
+    }
+     .unactive .text-data-extract{
+      color: #3F3F3F;
+     }
+    .btnCusTom{
+      width: 346px;
+      height: 41px;
+      background: #46C0D2;
+      border-radius: 4px;
+      font-weight: bold;
+      font-size: 16px;
+      line-height: 19px;
+      /* identical to box height */
+
+      text-align: center;
+
+      color: #FFFFFF;
+    }
+    .line {
+      width: 0px;
+      height:1px;
+      background:rgb(0, 162, 255);
+      position:absolute;
+      /* transform:rotate(30deg); */
+      transform-origin:0 0;
+      /* top:200px; */
+      /* left:100px; */
+    }
+    .div-canvas-disable{
+      opacity: 0.5;
+    }
+    .loading-content{
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      justify-content: center;
+    }
+  </style>
+  <script>
+    var localData = {{ data | tojson }};
+    $("#file0").hover(
+      function () {
+        $(this).child('p').css('color', 'white');
+        $(this).child('p').css('background-color','white' );
+      },
+      function () {
+        console.log("hover d")
+      }
+    );
+  </script>
+  <div id="review">
+    <div class="row" >
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+    <div class="content-report" style="margin-top: 0px; padding:0px;">
+      <div class="container" style="margin: unset; width: 100%; max-width: 2560px !important;">
+        <!-- <div class="content__header row">
+          <div class="col-md-12" style="padding-top: 5px; padding-bottom: 15px; margin-bottom: 20px;">
+            <div class="content__button">
+              <div class="row">
+                <div class="col-md-2">
+                  <button type="button" class="btn btn-custom btn-custom--secodary__color" @click="saveData()">
+                    <i class="material-icons">save</i>
+                    <span>保存</span>
+                  </button>
+                </div>
+                <div class="col-md-2">
+                  <button type="button" class="btn btn-custom btn-custom--secodary__color" v-on:click="updateExport()">
+                    <i class="material-icons">cloud_download</i>
+                    <span>エクスポート</span>
+                  </button>
+                </div>
+                {#                <div class="col-md-2">#}
+                {#                  <button type="button" class="btn btn-custom btn-custom--secodary__color" v-on:click="reDraw()">#}
+                {#                    <i class="material-icons">cached</i>#}
+                {#                    <span v-if="showData == 0">全て情報</span>#}
+                {#                    <span v-else-if="showData == 0">抽出情報</span>#}
+                {#                  </button>#}
+                {#                </div>#}
+              </div>
+            </div>
+          </div>
+        </div> -->
+        <div class="row">
+          <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 tableFixHead" style=" overflow: auto;    padding-right: 30px ;padding-left:unset;">
+            <div style=" overflow: auto; background: #E2F0FF; height: 100%;">
+              <div style="display: flex; justify-content: center; align-content: center; align-items: center; height: 50px; background-color: #E2F0FF; margin-top: 70px;">
+                <button style="width: 80%; cursor: pointer" class="btn btnCusTom" v-on:click="selectFile()">
+                  <span style="text-transform: none">{% raw %}{{(langChoose =='ja' ? "イメージを追加":"Add images")}}{% endraw %}</span>
+                </button>
+                <input type="file" id="files" ref="files" v-on:change="handleFileUpload()" hidden multiple accept="image/*, application/pdf"/>
+              </div>
+              <div style="display: flex; justify-content: center; align-content: center; align-items: center; height: 50px; background-color: #E2F0FF;">
+                <p class="documents-amount">
+                  <strong>{% raw %}{{data.length}}{% endraw %} </strong> {% raw %}{{(langChoose =='ja' ? "つのドキュメント":" documents")}}{% endraw %} 
+                </p> 
+              </div>
+              <div class="nicescroll-box-file" style="height: 100vh; min-height: 50vh;">
+                <div class="wrap">
+                  <div v-for="value,id in data" @mouseover="$('#status'+id).addClass('hover'); $('#pname-'+id).addClass('hovername')" @mouseleave=" $('#status'+id).removeClass('hover'); $('#pname-'+id).removeClass('hovername') " class="btn btn-md buttonfile" :class="id==current ? 'selected' :''" :id="'file'+id" @click="selectDocument(id)" type="submit" style="font-size: 14px; height: 4.5rem; color: #fff; width: 100%; background-color: #E2F0FF;;height: 200px; cursor: pointer;" >
+                    <img :src="'static/uploaded/' + value['raw_path']"  width="75" height="110" style=" border: 1px solid #fff; border-radius: 2px;">
+                    <p class="file-name"  style="margin-top: 1rem; text-transform: none !important;" :id="'pname-'+id"> {% raw %}{{value.name}}{% endraw %} </p>
+                    <div style="width: 100%; display: flex; justify-content: center; align-items: center;">
+                      <div class="result-file-status " :class="[value.status == 0 ? 'loading' : value.status == 1 ? 'executed' : value.status == 2 ? 'error' :  value.status == 5 ? 'confirm' : 'waitting', id == current ? 'selected' : '']" :id="'status'+id">
+                        <p  style="margin: unset; text-transform: none"> {% raw %}{{showStatus(value.status)}}{% endraw %}</p>
+                      </div>
+                    </div>
+                    <button v-if="value.status==2" v-on:click.stop="deleteFile(id)" class="close" style="position: absolute; right: 10%; top: 30%;" >
+                      <img class="delete-icon"  :src="(id==current) ? '../static/imgs/deletewhite.png':'../static/imgs/deletefile.png' " alt="">
+                    </button>
+                    <button v-if="value.status==2" v-on:click.stop="reRunOCR(id)" class="close" style=" position: absolute; right: 10%; top: 48%;" >
+                      <img class="rerun-icon" :src="(id==current) ? '../static/imgs/rerunwhite.png':'../static/imgs/rerunfile.png'" alt="">
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6" v-cloak style="padding:3vh 20px; display: flex;">
+            <div class="card" style="display: flex; align-items: center; align-content: center; height: fit-content;">
+              <nav aria-label="breadcrumb" id="bread-scrum" role="navigation" style="position: absolute; top:-35px; left: -10px; z-index: 1030;">
+                <ol class="breadcrumb" id="bread-scrum-ol-super" style="margin: unset; background: unset;">
+                  <li class="breadcrumb-item "><a href="#">{% raw %}{{langChoose =='ja' ? 'レビュー中' : 'Reviewing'}}{% endraw %} </a></li>
+                </ol>
+              </nav>
+              <div class="row " style="width: 100%; display: flex; align-items: center; height: 56px; background: #E2F0FF;">
+                <p class="file-name hihi" style="width: 100%; margin-bottom: 0px;"> {% raw %}{{data[current].name}}{% endraw %}  </p>
+              </div>
+              <div  id="canvasContainer" style=" width: 100%; height: 100%; display: flex;">
+                <div class="row align-items-center" style=" width: 100%; margin: 0px;">
+                  <div style="display: flex; align-items: center; justify-content: center; height: 70vh;width: 100%;">
+                    <canvas id="canvas" style="width: 100%;"></canvas>
+                  </div>
+                </div>
+                <!-- <canvas id="canvas2" width="650px" height="80px" style="border: solid 1px; margin-top: 20px"></canvas> -->
+              </div>
+              <div class="row" style="width: 100%; height: 56px; background: #E2F0FF;">
+                <div style="display: flex; justify-content: space-evenly; width: 100%; align-items: center;">
+                  <button type="button" @click="resetZoom" style="background-color: transparent; border: 0;" @click="resetzoom()">
+                    <span aria-hidden="true"><img src="../static/imgs/ResetZoom.png" alt=""></span>
+                    <span class="sr-only"></span>
+                  </button>
+                  <button type="button" @click="zoomOut" style="background-color: transparent; border: 0;">
+                    <span aria-hidden="true"><img src="../static/imgs/ZoomOut.png" alt=""></span>
+                    <span class="sr-only"></span>
+                  </button>
+                  <button type="button" @click="zoomIn" style="background-color: transparent; border: 0;">
+                    <span aria-hidden="true"><img src="../static/imgs/Zoom.png" alt=""></span>
+                    <span class="sr-only"></span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 tableFixHead" style="overflow: auto; padding: 3vh 20px; display: flex;" v-if="rect != null">
+            <div class="card" style="display: flex; align-items: center; align-content: center;justify-content: space-between;height: fit-content;" >
+            <div class="row " id="top-scroll" style="width: 100%; display: flex; align-items: center; height: 56px; background: #E2F0FF;">
+              <p class="file-name" style="width: 100%; margin-bottom: 0px;">{% raw %}{{langChoose =='ja' ? '出力結果' : 'Extracted Data'}}{% endraw %} </p>
+            </div>
+            <div class="nicescroll-box"  v-if="extractData" style="width: 100%;min-height: 50vh;     height: 70vh;">
+              <div class="wrap">
+                <div class="row data-div"  v-for="key,indx in Object.keys(extractData)" :key="key" @click=" displayfilter[key] ? selectRect(key,indx, $event) : ''" v-bind:class="{ unselected: !displayfilter[key]}" :id="'data-extract'+indx" >
+                  <div class="row data-row" style="height: 6.5vh;">
+                    <div class="col-4 col-md-4 text-data-extract  nicescroll-key" v-bind:class="{ disabled: !displayfilter[key]}" >
+                      {% raw %}{{key}}{% endraw %} 
+                   </div>
+                   <div class="col-lg-6 col-md-6 col-xl-6 col-sm-6 col-5" v-bind:class="{ disabled: !displayfilter[key]}" style="cursor: pointer; padding-right: 0px; background: #fff; height: fit-content; margin: auto;">
+                     <div v-for="dx in extractData[key]">
+                     <input v-for="dy in dx" v-model="dy['text']" :disabled="!displayfilter[key]" v-bind:class="{ unselected: !displayfilter[key]}" class="form-control form-inline input-cus">
+                   </div>
+                  </div>
+                   <div class="col-1 col-md-1" style="display: flex; justify-content: center; align-items: center;">
+                      <button type="button" class="close" @click.stop="removeLabel(key,indx, $event)" style="opacity: 1 !important; ">
+                        <img :src=" !displayfilter[key] ? '../static/imgs/hide.png' : '../static/imgs/visible.png'" class="eye-icon" alt="">
+                     </button>
+                   </div>
+                  </div>
+                  <div class="row data-row" v-bind:class="{'div-canvas-disable': !displayfilter[key]}">
+                    <div class="div-canvas2" :class="current_key_ind ? (indx===current_key_ind ? 'selected' :'') : ''">
+                      <canvas :id="'canvas-small'+indx" ></canvas> 
+                    </div>
+                  </div>
+                  
+                </div>
+              </div>
+              <div v-if="data[current].status==0" class="loading-content">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="200px" height="200px"
+                viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
+                    <g transform="translate(50,50)">
+                      <circle cx="0" cy="0" r="8.333333333333334" fill="none" stroke="#e15b64" stroke-width="4"
+                              stroke-dasharray="26.179938779914945 26.179938779914945" transform="rotate(13.1559)">
+                        <animateTransform attributeName="transform" type="rotate" values="0 0 0;360 0 0" times="0;1" dur="1s"
+                                          calcMode="spline" keySplines="0.2 0 0.8 1" begin="0"
+                                          repeatCount="indefinite"></animateTransform>
+                      </circle>
+                      <circle cx="0" cy="0" r="16.666666666666668" fill="none" stroke="#f47e60" stroke-width="4"
+                              stroke-dasharray="52.35987755982989 52.35987755982989" transform="rotate(84.8526)">
+                        <animateTransform attributeName="transform" type="rotate" values="0 0 0;360 0 0" times="0;1" dur="1s"
+                                          calcMode="spline" keySplines="0.2 0 0.8 1" begin="-0.2"
+                                          repeatCount="indefinite"></animateTransform>
+                      </circle>
+                      <circle cx="0" cy="0" r="25" fill="none" stroke="#f8b26a" stroke-width="4"
+                              stroke-dasharray="78.53981633974483 78.53981633974483" transform="rotate(172.589)">
+                        <animateTransform attributeName="transform" type="rotate" values="0 0 0;360 0 0" times="0;1" dur="1s"
+                                          calcMode="spline" keySplines="0.2 0 0.8 1" begin="-0.4"
+                                          repeatCount="indefinite"></animateTransform>
+                      </circle>
+                      <circle cx="0" cy="0" r="33.333333333333336" fill="none" stroke="#abbd81" stroke-width="4"
+                              stroke-dasharray="104.71975511965978 104.71975511965978" transform="rotate(261.236)">
+                        <animateTransform attributeName="transform" type="rotate" values="0 0 0;360 0 0" times="0;1" dur="1s"
+                                          calcMode="spline" keySplines="0.2 0 0.8 1" begin="-0.6"
+                                          repeatCount="indefinite"></animateTransform>
+                      </circle>
+                      <circle cx="0" cy="0" r="41.666666666666664" fill="none" stroke="#849b87" stroke-width="4"
+                              stroke-dasharray="130.89969389957471 130.89969389957471" transform="rotate(337.468)">
+                        <animateTransform attributeName="transform" type="rotate" values="0 0 0;360 0 0" times="0;1" dur="1s"
+                                          calcMode="spline" keySplines="0.2 0 0.8 1" begin="-0.8"
+                                          repeatCount="indefinite"></animateTransform>
+                      </circle>
+                    </g>
+                </svg>
+                <div style="font-size: 2vh; padding: 6vh;">
+                  {% raw %}{{langChoose =='ja' ? 'しばらくお待ちください。' : 'Please wait few seconds...'}}{% endraw %}
+                </div>
+              </div>
+            </div>
+            
+            <div class="row" id="bottom-scroll" style="width: 100%; height: 56px;">
+              <div style="display: flex; justify-content: space-evenly; width: 100%; align-items: center;">
+                <button :class="(data[current].status==1 || data[current].status==5) ? '': 'disabled'" @click="confirmDocument(afterConfirm)" class="btn btnCusTom" type="button" style="text-transform: none; width: 45%;">
+                  {% raw %}{{langChoose =='ja' ? '確認' : 'Confirm'}}{% endraw %}  ({% raw %}{{number_confirmed}}{% endraw %} /{% raw %}{{data.length}}{% endraw %})
+                </button>
+               <button :class="(data[current].status==1 || data[current].status==5) ? '': 'disabled'" @click="backToFileList" class="btn btnCusTom" type="button" style="text-transform: none; width: 45%;">
+                  {% raw %}{{langChoose =='ja' ? '次' : 'Next'}}{% endraw %} 
+                </button>
+              </div>
+            </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+      </div>
+    </div>
+    <!-- modal notice  -->
+    <div class="modal fade bd-example-modal-lg" id="alert" data-keyboard="false" data-backdrop="static" tabindex="-1" role="" aria-labelledby="myModalLabel" aria-modal="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered" role="document" style="margin-top: 0px;">
+        <div class="rectangle-139 modal-content" style="border-radius: 16px;">
+          <div class="modal-body">
+            <div class="modal-header" style="
+            flex-direction: column;
+            padding-top: 0px;
+            align-items: center;"
+            >
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true"><img src="../static/imgs/close.png" alt=""></span>
+                <span class="sr-only">Close</span>
+              </button>
+              <img src="../static/imgs/icondanger.png" alt="">
+              <p style="text-align: center; font-size: 20px; width: 100%; font-weight: bold; line-height: 23px; color: #2D4761;">
+                {% raw %}{{ langChoose =='ja' ? 'よろしいですか？' : 'Are you sure?' }}{% endraw %}
+              </h2>
+            </div>
+            <div class="modal-body" style="
+              height: 55%;
+              display: flex;
+              flex-direction: column;
+              justify-content: space-between;
+              padding-top: 20px;
+            ">
+                <span style=" padding-left: 17%;
+                font-weight: bold;
+                font-size: 16px;
+                line-height: 19px;
+                color: #7C97B1;
+                height: 0px;">
+                  {% raw %}{{ langChoose =='ja' ? 'ドキュメント＃' : 'Are you sure delete ' }}{% endraw %} <strong>{% raw %} {{name_delete}} {% endraw %}{% raw %}{{ langChoose =='ja' ? 'を削除しますか。' : '' }}{% endraw %} </strong>?
+                </span>
+                <span style="  padding-left: 17%;height: 40px;;font-size: 16px; line-height: 19px;color: #7C97B1;"> {% raw %}{{ langChoose =='ja' ? '書類削除を実行すると復旧することが出来なくなります。.':'If you delete the document you can’t revocer it.'}}{% endraw %}</span>
+                <div style="    
+                display: flex;
+                justify-content: space-evenly;">
+                  <button class="btn btn-md " type="button"  style=" font-size: 14px; height: 4.5rem; color: #7C97B1; width: 180px; background-color:  #E9F0F6; border-radius: 4px;"  data-dismiss="modal">{% raw %}{{ langChoose =='ja' ? 'キャンセル' : 'Cancel' }}{% endraw %}</button>
+                  <button type="submit" @click="confirmDeleteFile()" class="btn btn-md" style="font-size: 14px; height: 4.5rem; color: #fff; width: 180px; background-color: #FF4461; border-radius: 4px;">{% raw %}{{ langChoose =='ja' ? '削除':'Delete' }}{% endraw %} </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    <!-- end moda notice  -->
+    <!-- alert -->
+    <div id="snackbar-bottom" v-bind:class="{show : showNotice}">    
+      <div class="alert alert-success alert-dismissible" role="alert" style="font-size: 14px;">
+      <button type="button" style="font-size: 13px; line-height: 15px;color: #587250;"  class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <i class="material-icons">check_circle_outline</i><strong>Confirmed:</strong> {% raw %}{{msgNotice}}{% endraw %}
+      </div>
+    </div>
+  <!-- end alert  -->
+  <svg v-show="showLine" style="position: absolute; left: 0px; right: 0px;top:0px; bottom:0px; pointer-events: none; width: -webkit-fill-available; height: -webkit-fill-available;">
+    <line id="line-connect-1" x1="0" y1="0" x2="0" y2="0" style="stroke:#086799; stroke-width:2" />
+    <line id="line-connect-2" x1="0" y1="0" x2="0" y2="0" style="stroke:#086799; stroke-width:2" />
+    <circle id="line-connect-3" cx="0" cy="0" r="12" stroke="#086799" stroke-width="3" fill="#FFFFFF" />
+  </svg>
+  </div>
+  <script src="../static/js/jquery.nicescroll.min.js"></script>
+  <script src="../static/js/socket.io.js"></script>
+  <script src="static/js/review.js?v=2211"></script>
+{% endblock content %}

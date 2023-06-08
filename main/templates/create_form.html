@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+  <title>
+    Aminext Dashboard
+  </title>
+  <meta
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no"
+      name="viewport"
+  />
+  <!--     Fonts and icons     -->
+  <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:400,700|Material+Icons"
+  />
+  <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css"
+  />
+  <!-- CSS Files -->
+  <link href="static/assets/css/dashboard.min.css" rel="stylesheet"/>
+  <!-- CSS Just for demo purpose, don't include it in your project -->
+
+  <link href="static/assets/demo/demo.css" rel="stylesheet"/>
+  <link href="static/assets/css/custom.css" rel="stylesheet"/>
+  <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/vue.min.js') }}"></script>
+</head>
+
+<body class="">
+<div class="content-section">
+  <form method="POST" action="">
+    {{ form.hidden_tag() }}
+    <fieldset class="form-group">
+      <div class="form-group">
+        {{ form.name.label(class="form-control-label") }}
+
+        {% if form.name.errors %}
+        {{ form.name(class="form-control form-control-lg is-invalid") }}
+        <div class="invalid-feedback">
+          {% for error in form.name.errors %}
+          <span>{{ error }}</span>
+          {% endfor %}
+        </div>
+        {% else %}
+        {{ form.name(class="form-control form-control-lg") }}
+        {% endif %}
+      </div>
+      <div class="form-group">
+        {{ form.url.label(class="form-control-label") }}
+
+        {% if form.url.errors %}
+        {{ form.url(class="form-control form-control-lg is-invalid") }}
+        <div class="invalid-feedback">
+          {% for error in form.url.errors %}
+          <span>{{ error }}</span>
+          {% endfor %}
+        </div>
+        {% else %}
+        {{ form.url(class="form-control form-control-lg") }}
+        {% endif %}
+      </div>
+
+      <div class="form-group">
+        {{ form.api.label(class="form-control-label") }}
+
+        {% if form.api.errors %}
+        {{ form.api(class="form-control form-control-lg is-invalid") }}
+        <div class="invalid-feedback">
+          {% for error in form.url.errors %}
+          <span>{{ error }}</span>
+          {% endfor %}
+        </div>
+        {% else %}
+        {{ form.api(class="form-control form-control-lg") }}
+        {% endif %}
+      </div>
+
+      <div class="form-group">
+        {{ form.company_id.label(class="form-control-label") }}
+
+        {% if form.company_id.errors %}
+        {{ form.company_id(class="form-control form-control-lg is-invalid") }}
+        <div class="invalid-feedback">
+          {% for error in form.url.errors %}
+          <span>{{ error }}</span>
+          {% endfor %}
+        </div>
+        {% else %}
+        {{ form.company_id(class="form-control form-control-lg") }}
+        {% endif %}
+      </div>
+
+      <div class="form-group">
+        {{ form.description.label(class="form-control-label") }}
+
+        {% if form.description.errors %}
+        {{ form.description(class="form-control form-control-lg is-invalid") }}
+        <div class="invalid-feedback">
+          {% for error in form.description.errors %}
+          <span>{{ error }}</span>
+          {% endfor %}
+        </div>
+        {% else %}
+        {{ form.description(class="form-control form-control-lg") }}
+        {% endif %}
+      </div>
+    </fieldset>
+    <div class="form-group">
+      {{ form.submit(class="btn btn-outline-info") }}
+    </div>
+  </form>
+</div>
+<!--   Core JS Files   -->
+<script src="static/assets/js/core/jquery.min.js"></script>
+<script src="static/assets/js/material-dashboard.min.js?v=2.1.0" type="text/javascript"></script>
+<!-- Sharrre libray -->
+<script src="static/assets/demo/jquery.sharrre.js"></script>
+</body>
+</html>

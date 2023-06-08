@@ -1,0 +1,291 @@
+{% extends "layout.html" %}
+{% block content %}
+  <style type="text/css">
+    table tr td {
+      padding: 10px 15px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .setting-content {
+      overflow-y: scroll;
+      min-height: 500px !important;
+    }
+
+    .form-item {
+      max-width: 300px;
+    }
+
+    .form-head {
+      margin-bottom: 15px;
+    }
+
+    .form-head span {
+      font-size: 18px;
+    }
+
+    .btn {
+      font-size: 14px;
+    }
+
+    .modal-dialog {
+      position: relative;
+      display: table;
+      overflow: auto;
+      width: auto !important;
+      min-width: 350px;
+    }
+
+    .modal-body { /* Restrict Modal width to 90% */
+      overflow-x: auto !important;
+      max-width: 90vw !important;
+    }
+
+    .preview__container {
+      margin-top: 50px;
+    }
+
+    .form-control {
+      background: #ffffff !important;
+    }
+
+/*    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #ddd;
+    }*/
+
+/*    ::-webkit-scrollbar-thumb {
+      background: #006fff;
+      border-radius: 10px;
+    }
+*/
+    .btn-sm {
+      font-size: 10px;
+      padding: 5px;
+      border-radius: 5px;
+    }
+
+    .btn-process {
+      background-color: #46C0D2;
+    }
+
+    .btn-delete {
+      background-color: #93A5B6;
+    }
+
+    .footer-button {
+      position: fixed;
+      width: 28%;
+      background-color: inherit;
+      right: 0;
+    }
+
+    .active {
+      color: red !important;
+    }
+
+    .setting-content {
+      max-height: 70vh;
+      max-width: 350px;
+    }
+    .form-item {
+      /*max-width: 300px;*/
+      margin-right: 15px; 
+    }
+
+  </style>
+  <script>
+    var localData = {{ data | tojson }};
+  </script>
+  <div id="update_template" class="content">
+    <div class="container" v-if="file == null">
+      <div class="card">
+        <div id="upload-content" class="card-body" @drop.prevent="fileDropHover" @dragover.prevent="fileDragHover"
+             @dragleave.prevent="fileDragHover">
+          <div class="upload__content">
+            <div href="#">
+              <img src="{{ url_for('static', filename='imgs/shap6.png') }}" alt=""/>
+            </div>
+            <h2 class="upload__title">
+              帳票などファイルをドロップする
+            </h2>
+            <h2 class="upload__subtitle">
+              または
+            </h2>
+            <div class="upload__icon" style="cursor: pointer" v-on:click="selectFile()">
+              <img src="{{ url_for('static', filename='imgs/combine.png') }}" alt=""/>
+            </div>
+            <input type="file" id="files" ref="files" v-on:change="handleFilesUpload()" hidden
+                   accept="image/*, application/pdf"/>
+            <div class="upload__description text-center">
+              <span class="modified">PDF・JPEG・JPG・PNG</span>
+              <div class="flex justify-content-center align-items-center">
+                <div class="row">
+                  <div class="col-md-2"></div>
+                  <div class="col-md-8">
+                    <span class="text-center">複数の画像をアップロード可能 20MB 以内</span>
+                  </div>
+                  <div class="col-md-2"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="preview__container row" :class="file != null ? '' : 'hidden'">
+      <div id="canvasContainer" class="col-md-8 col-xs-12 col-sm-12" style="padding: 0 12%">
+        <canvas id="canvas" style="border: solid 1px; margin: auto"></canvas>
+      </div>
+      <div class="col-xs-12 col-sm-12 col-md-4 setting-content">
+        <div class="detail-content" v-if="rect != null && rect.labels.length > 0">
+          <div v-for="x, id in rect.labels" class="form-item" :id="'form-item-'+id"
+               style="margin: 0 5px 20px 5px; padding: 10px; position:relative; cursor: pointer"
+               @click="selectRect(x, $event)">
+            <div class="form-head" style="font-weight: bold; color: black">
+              <span>読取範囲 #{% raw %}{{id}}{% endraw %}</span>
+              <a class="nav-link" data-toggle="collapse" disabled="disabled" @click="showDetail(x, id)"
+                 style="position: absolute; right: 2px; top: 0">
+                <i class="aminext-icon"><img src="/static/imgs/setting.png" alt=""></i>
+              </a>
+            </div>
+            <div class="form-body">
+              <div class="form-group">
+                <label for="">項目名</label>
+                <input type="text" class="form-control" v-model="rect.labels[id]['key']">
+              </div>
+              <div class="form-group">
+                <label for="">CSV出力先コラム</label>
+                <select class="form-control" v-model="rect.labels[id]['position']" @change="updateList()"
+                        :data-value="rect.labels[id]['position']">
+                  <option v-for="c in listColumn" :value="c"
+                          :disabled="columnSelected.includes(c)">{% raw %}{{c}}{% endraw %}</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="">OCRモデル</label>
+                <select class="form-control" v-model="rect.labels[id]['model']">
+                  <option value="normal">活字モデル</option>
+                  <option value="hw">手書き</option>
+                  <option value="hw_number">数値</option>
+                  <option value="datetime">日付</option>
+                  <option value="price">金額</option>
+                  <option value="checkbox">チェックボックス</option>
+                  <option value="postcode">郵便番号</option>
+                  <option value="phone">電話番号</option>
+                  <option value="address">住所</option>
+                  <option value="time">時刻</option>
+                  <option value="percent">パーセンテージ</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <div class="form-check">
+                  <input type="checkbox" v-model="rect.labels[id]['display']" :id="'check-box-'+id" @change="test1(id)"
+                         true-value="yes" false-value="no">
+                  <label class="form-check-label" :for="'check-box-'+id">CSV出力</label>
+                </div>
+              </div>
+              <div class="button-footer" style="text-align: center;">
+                <button class="btn btn-sm btn-delete" @click="removeLabel(x)">キャンセル</button>
+                <button class="btn btn-sm btn-process" @click="getText(id)">確認</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-button" v-if="rect != null">
+      <button class="btn btn-large btn-delete" @click="clear()" style="margin-right: 25px">キャンセル</button>
+      <button class="btn btn-large btn-process" @click="saveTemplate()">保存</button>
+    </div>
+    <canvas id="test" style="margin: auto" class="hidden"></canvas>
+    <div class="modal fade" id="update-detail" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true" style="font-size: 18px">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-body">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">
+                <span aria-hidden="true">×</span>
+                <span class="sr-only">Close</span>
+              </button>
+            </div>
+            <div class="">
+              <div class="row" v-if="selectedBox != null" style="text-align: center">
+                <div class="form-group col-md-6">
+                  <label>横</label>
+                  <input class="form-control" type="text" v-model="rect.labels[selectedBox].rows"
+                         style="width: 60%; margin: auto;">
+                </div>
+                <div class="form-group col-md-6">
+                  <label>縦</label>
+                  <input class="form-control" type="text" v-model="rect.labels[selectedBox].columns"
+                         style="width: 60%; margin: auto;">
+                </div>
+              </div>
+              <div class="preview" style="text-align: center">
+                <canvas id="show-cropped" style="margin: auto" width="400" height="400"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-delete" data-dismiss="modal" style="margin-right: 20px">キャンセル</button>
+            <button class="btn btn-process" data-dismiss="modal">保存</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade" id="testdata" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+         style="font-size: 18px">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-body">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">
+                <span aria-hidden="true">×</span>
+              </button>
+            </div>
+            <table v-if="extracted != null" class="table table-bordered">
+              <tr v-for="id in extractedRow">
+                <td v-for="idx in extractedCol">
+                  {% raw %}
+                  {{extracted[parseInt(id - 1)] && extracted[parseInt(id - 1)][parseInt(idx - 1)] ?
+                  extracted[parseInt(id - 1)][parseInt(idx - 1)]['text'] : ''}}
+                  {% endraw %}
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade" id="test" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-body">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">
+                <span aria-hidden="true">×</span>
+                <span class="sr-only">Close</span>
+              </button>
+            </div>
+            <div class="">
+              <label style="font-size: 1.5rem; font-weight: bold; color: red">テンプレート名が存在します</label>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-success" data-dismiss="modal">Ok</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="{{ url_for('static', filename='js/pdf.js') }}?v=20"></script>
+  <script src="{{ url_for('static', filename='js/pdf.worker.js') }}?v=20"></script>
+  <script src="{{ url_for('static', filename='js/update_template.js') }}?v=10011"></script>
+{% endblock content %}

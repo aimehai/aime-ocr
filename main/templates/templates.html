@@ -1,0 +1,231 @@
+{% extends "layout.html" %}
+{% block content %}
+  <style>
+    .search {
+      position: relative;
+    }
+
+    .searchbox {
+      font-size: 14px;
+      width: 50%;
+      color: #000;
+      height: 4.5rem;
+      border: 1px solid #B4CADF;
+      padding: 5px 10px;
+      border-radius: 5px;
+      outline: none;
+      margin: 1px;
+    }
+
+    .searchbtn {
+      position: absolute;
+      font-size: 25px;
+      color: #B4CADF;
+      background-color: transparent;
+      border: none;
+      right: 8%;
+      top: 7px;
+      outline: none;
+      padding: 4px;
+    }
+
+    @-webkit-keyframes candystripe {
+      to {
+        background-position: 20px 0;
+      }
+    }
+
+    @-moz-keyframes candystripe {
+      to {
+        background-position: 20px 0;
+      }
+    }
+
+    @keyframes candystripe {
+      to {
+        background-position: 20px 0;
+      }
+    }
+  </style>
+  <script>
+    var localData = {{ data | tojson }};
+  </script>
+  <div id="template" class="content">
+    <div class="container">
+      <div class="content__button">
+        <div class="row">
+          <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <div class="row">
+              <div class="col-md-3">
+                <button type="button" class="btn btn-md btn-custom btn-custom--secodary__color" @click="createTeamplate()">
+                  <i class="material-icons">add_circle_outline</i>
+                  <span>新規</span>
+                </button>
+              </div>
+              <div class="col-md-3">
+                <button type="button" class="btn btn-md btn-custom btn-custom--secodary__color" @click="delTemplate()">
+                  <i class="material-icons">delete_outline</i>
+                  <span>削除</span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <div class="row">
+              <div class="col-md-3"></div>
+              <div class="col-md-3"></div>
+              <div class="search col-md-6">
+                <input type="text" name="q" class="searchbox" placeholder="Search" style="width: 100%" v-model="cate_name" v-on:keyup="searchName()">
+                <button type="submit" class="searchbtn"><i class="fas fa-search"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="content__table">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="card card--transparent">
+                <div class="card-body p-0">
+                  <div class="material-datatables" style="height: 610px">
+                    <table id="datatables" class="table table-striped table-no-bordered table-hover" cellspacing="0" style="width:100%">
+                      <thead>
+                      <tr>
+                        <th class="text-center">
+                          <div class="form-check">
+                            <label class="form-check-label">
+                              <input class="form-check-input" type="checkbox" v-on:change="selectAll" v-model="allSelected"/>
+                              <span class="form-check-sign">
+                            <span class="check"></span>
+                          </span>
+                            </label>
+                          </div>
+                        </th>
+                        <th class="text-center">ファイル名</th>
+                        <th class="text-center">登録日</th>
+                        <th></th>
+                      </tr>
+                      </thead>
+                      <tbody>
+                      <tr v-for="d in listFilter" :class="d.view_status ? 'font-weight-normal' : 'font-weight-bold'">
+                        <td class="td__content text-center">
+                          <div class="form-check">
+                            <label class="form-check-label">
+                              <input class="form-check-input" type="checkbox" :value="d.id" v-on:change="select" v-model="selectedList"/>
+                              <span class="form-check-sign">
+                              <span class="check"></span>
+                            </span>
+                            </label>
+                          </div>
+                        </td>
+                        <td class=" td__content text-center">
+                        <span class="td__content-text">
+                          <a :href="'/update_template/'+d['id']">{% raw %}{{d.name}}{% endraw %}</a>
+                        </span>
+                        </td>
+                        <td class="td__content text-center">
+                          {% raw %}{{prettyDate(d.created_at)}}{% endraw %}
+                        </td>
+                        <td>
+                          <button class="btn btn-danger" @click="deleteTemplate(d.id)"><i class="material-icons">delete_outline</i></button>
+                          <button class="btn btn-success" @click="rename(d.id, d.name)"><i class="material-icons">create</i></button>
+                          <button class="btn btn-info" @click="duplicate(d.id)"><i class="material-icons">content_copy</i></button>
+                        </td>
+                      </tr>
+                      <tr v-if="data.length <= 0">
+                        <td colspan="4" style="text-align: center">No record</td>
+                      </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <!-- end content-->
+              </div>
+              <!--  end card  -->
+            </div>
+            <!-- end col-md-12 -->
+          </div>
+          <nav>
+            <ul class="pagination justify-content-center">
+              <li><a @click="first"> << </a></li>
+              <li><a @click="prev"> < </a></li>
+              <li v-for="p in pageCount" :class="pageNo == p ? 'active' : ''"><a @click="page(p)">{% raw %}{{p}}{% endraw %}</a></li>
+              <li><a @click="next"> > </a></li>
+              <li><a @click="last"> >> </a></li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+      <div class="modal fade" id="create-template" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-body">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                  <span aria-hidden="true">×</span>
+                  <span class="sr-only">Close</span>
+                </button>
+              </div>
+              <div class="">
+                <label style="font-size: 1.5rem; font-weight: bold;">テンプレート名</label>
+                <div class="form-group">
+                  <input class="form-control" type="text" style="margin: 15px 0" v-model="templateName">
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-success" @click="create()">Create</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal fade" id="edit-template" tabindex="-1" role="dialog" aria-labelledby="editTempModal" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-body">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                  <span aria-hidden="true">×</span>
+                  <span class="sr-only">Close</span>
+                </button>
+              </div>
+              <div class="">
+                <label style="font-size: 1.5rem; font-weight: bold;">テンプレート名</label>
+                <div class="form-group">
+                  <input class="form-control" type="text" style="margin: 15px 0" v-model="templateName">
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-success" @click="renameTemp()">Update</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal fade" id="notify" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-body">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                  <span aria-hidden="true">×</span>
+                  <span class="sr-only">Close</span>
+                </button>
+              </div>
+              <div class="">
+                <label style="font-size: 1.5rem; font-weight: bold; color: red">テンプレート名が存在します</label>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-success" data-dismiss="modal">Ok</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <a class="btn__aminate btn__upload" href="/upload">
+        <div class="btn__aminate-image">
+          <img src="./static/imgs/shap5.png" alt="" class=""/>
+        </div>
+      </a>
+      <script src="static/js/template.js?v=465465"></script>
+    </div>
+{% endblock content %}

@@ -1,0 +1,125 @@
+{% extends "layout.html" %}
+{% block content %}
+  <style>
+    tr.active {
+      background-color: #ffeb3b !important;
+    }
+
+    ::-webkit-scrollbar {
+      width: 5px;
+    }
+  </style>
+  <script>
+      var localData = {{ data | tojson }};
+  </script>
+  <div id="test">
+    <div class="content-report" style="margin-top: 0px;">
+      <div class="container">
+        <div class="content__header row">
+          <div class="col-md-12" style="padding-top: 5px; padding-bottom: 15px; margin-bottom: 20px;">
+            <div class="content__button">
+              <div class="row">
+                <div class="col-md-2">
+                  <button type="button" class="btn btn-custom btn-custom--secodary__color" @click="saveData()">
+                    <i class="material-icons">save</i>
+                    <span>保存</span>
+                  </button>
+                </div>
+                <div class="col-md-2">
+                  <button type="button" class="btn btn-custom btn-custom--secodary__color" v-on:click="updateExport()">
+                    <i class="material-icons">cloud_download</i>
+                    <span>エクスポート</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12 col-sm-12 col-md-8 col-lg-8" v-cloak>
+            <div id="canvasContainer">
+              <canvas id="canvas" style="border: solid 1px"></canvas>
+              <canvas id="canvas2" width="650px" height="80px" style="border: solid 1px; margin-top: 20px"></canvas>
+            </div>
+          </div>
+          <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4" style="overflow: auto; max-height: 750px" v-if="rect != null">
+            <table v-if="extractData != null" class="table table-bordered">
+              <thead>
+              <th style="text-align: center;">項目</th>
+              <th style="text-align: center">認識結果</th>
+              <th style="text-align: center"></th>
+              </thead>
+              <tr v-for="key in testData" :data-value="key">
+                <td style="font-weight: bold; font-size: 12px; color: #246698; text-align: center; cursor: pointer" @click="selectSuggest(key, $event)">
+                  <input v-model="key" class="form-control form-inline" style="width: 80%; margin-bottom: 10px" @click="selectSuggest(key, $event)">
+                </td>
+                <td style="cursor: pointer">
+                  <div v-if="extractData[key] && extractData[key] != null" v-for="dx in extractData[key]" @click="selectRect(key, $event)">
+                    <input v-for="dy in dx" v-model="dy['text']" class="form-control form-inline" style="width: 80%; margin-bottom: 10px" @click="selectRect(key, $event)">
+                  </div>
+                </td>
+                <td>
+                  <button class="btn btn-sm btn-outline-danger" @click="removeLabel(key, $event)"><i class="material-icons">delete</i></button>
+                </td>
+              </tr>
+              <tr id="suggest">
+                <td colspan="3" style="text-align: center">
+                  <h3 style="font-weight: bold; color: #009f75">提案</h3>
+                </td>
+              </tr>
+              <tr v-for="key in Object.keys(suggestionData)" :data-value="key">
+                <td style="font-weight: bold; font-size: 12px; color: #246698; text-align: center; cursor: pointer" @click="selectSuggest(key, $event)">
+                  <input v-model="key" class="form-control form-inline" style="width: 80%; margin-bottom: 10px" @click="selectSuggest(key, $event)">
+                </td>
+                <td style="cursor: pointer">
+                  <div v-for="dx in suggestionData[key]" @click="selectSuggest(key, $event)">
+                    <input v-for="dy in dx" v-model="dy['text']" class="form-control form-inline" style="width: 80%; margin-bottom: 10px" @click="selectSuggest(key, $event)">
+                  </div>
+                </td>
+                <td>
+                  <button class="btn btn-sm btn-outline-danger" @click="removeSugst(key+'-sg', $event)"><i class="material-icons">delete</i></button>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+        <div class="footer-preview" style="margin-top: 50px">
+          <div class="row">
+            <div class="col-md-1 col-lg-1" style="vertical-align: middle">
+              <button class="am-prev btn__aminate btn__aminate--transparent" v-on:click="prevImg()">
+                <div class="btn__aminate-image--custom">
+                  <img src="static/imgs/prev.png" alt="" style="max-width: 100%;"/>
+                </div>
+              </button>
+            </div>
+            <div class="col-xs-10 col-md-10 col-lg-10">
+              <div class="owl-carousel">
+                <div v-for="d, id in data" style="cursor: pointer; height: 100px" v-on:click="selectImg(id)" class="row preview__content"
+                     :class="id == current ? 'selected' : ''">
+                  <div class="col-md-6">
+                    <img :src="'static/uploaded/'+d['raw_path']" alt="" style="max-height: 80px; max-width: 100%"/>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="preview__text">
+                      <span data-toggle="tooltip" :title="d.name"> {% raw %}{{d.name}}{% endraw %}</span>
+                      <span>{% raw %}{{prettyDate(d.created_at)}}{% endraw %}</span>
+                      <span>{% raw %}{{d.type}}{% endraw %}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-1 col-lg-1" style="vertical-align: middle">
+              <button class="am-next btn__aminate btn__aminate--transparent" v-on:click="nextImg()">
+                <div class="btn__aminate-image--custom">
+                  <img src="static/imgs/next.png" alt="" style="max-width: 100%;"/>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="static/js/test.js?v=3009"></script>
+{% endblock content %}

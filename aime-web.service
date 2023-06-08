@@ -1,0 +1,13 @@
+[Unit]
+Description=Aime-ocr web service
+After=network.target
+
+[Service]
+User=ubuntu
+Group=www-data
+WorkingDirectory=/home/ubuntu/workspace/aime-ocr
+Environment="PATH=/home/ubuntu/anaconda/envs/aimeocr/bin"
+ExecStart=/home/ubuntu/anaconda/envs/aimeocr/bin/python run.py
+
+[Install]
+WantedBy=multi-user.target

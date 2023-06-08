@@ -1,0 +1,313 @@
+{% extends "layout.html" %}
+{% block content %}
+  <style>
+    .progress {
+      position: relative;
+      z-index: 5;
+      background: #484848;
+      border: 1px solid #282828;
+      border-radius: 20px;
+      display: inline-block;
+      margin: 0 !important;
+    }
+
+    .progress, .progress-bar {
+      width: 70px;
+      max-width: 70px;
+      height: 15px;
+    }
+
+    .progress-bar {
+      overflow: hidden;
+      position: relative;
+      z-index: 10;
+      border-radius: 12px;
+      width: 0;
+      -moz-transition: width .2s linear;
+      -webkit-transition: width .2s linear;
+      -o-transition: width .2s linear;
+      transition: width .2s linear;
+    }
+
+    .progress.candy .progress-bar {
+      background-color: #20dd40;
+      box-shadow: 0 0 6px 2px rgba(255, 255, 255, 0.3) inset;
+      background-image: linear-gradient(-45deg, rgba(255, 255, 255, 0.35) 25%, rgba(255, 255, 255, 0) 25%, rgba(255, 255, 255, 0) 50%, rgba(255, 255, 255, 0.35) 50%, rgba(255, 255, 255, 0.35) 75%, rgba(255, 255, 255, 0) 75%, rgba(255, 255, 255, 0));
+      background-repeat: repeat-x;
+      background-size: 20px 20px;
+      -webkit-animation: candystripe 1s linear infinite;
+      -moz-animation: candystripe 1s linear infinite;
+      animation: candystripe 1s linear infinite;
+    }
+
+
+    .search {
+      position: relative;
+    }
+
+    .searchbox {
+      font-size: 14px;
+      width: 50%;
+      color: #000;
+      height: 4.5rem;
+      border: 1px solid #B4CADF;
+      padding: 5px 10px;
+      border-radius: 5px;
+      outline: none;
+      margin: 3px;
+    }
+
+    .searchbtn {
+      position: absolute;
+      font-size: 25px;
+      color: #B4CADF;
+      background-color: transparent;
+      border: none;
+      right: 8%;
+      top: 7px;
+      outline: none;
+      padding: 4px;
+    }
+
+    .btn-custom--primary__color {
+      box-shadow: none;
+      color: #727f93;
+      border: solid 1px #727f93;
+      background-color: inherit;
+    }
+
+    .dropdown-menu {
+      padding: 20px;
+    }
+
+    .dropdown-menu {
+      width: 180px;
+    }
+
+    ul li {
+      cursor: pointer;
+      color: #086799;
+    }
+
+    @-webkit-keyframes candystripe {
+      to {
+        background-position: 20px 0;
+      }
+    }
+
+    @-moz-keyframes candystripe {
+      to {
+        background-position: 20px 0;
+      }
+    }
+
+    @keyframes candystripe {
+      to {
+        background-position: 20px 0;
+      }
+    }
+  </style>
+  <script>
+    var localData = {{ data | tojson }};
+  </script>
+  <div id="history" class="content">
+    <div class="container">
+      <div class="content__button">
+        <div class="row">
+          <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <div class="row">
+              <div class="col-md-3">
+                <button type="button" class="btn btn-md btn-custom btn-custom--secodary__color" @click="startProcess()">
+                  <img src="static/imgs/shape2.png" alt=""/>
+                  <span>OCR実行</span>
+                </button>
+              </div>
+              <div class="col-md-3">
+                <button type="button" class="btn btn-custom btn-custom--secodary__color" v-on:click="deleteResult">
+                  <i class="material-icons">delete_outline</i>
+                  <span>削除</span>
+                </button>
+              </div>
+              <div class="col-md-3 dropdown">
+                <button type="button" class="btn btn-custom btn-custom--secodary__color" v-on:click="exportData()">
+                  <i class="material-icons">cloud_download</i>
+                  <span>CSV出力</span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <div class="row">
+              <div class="col-md-3 dropdown">
+                <button type="button" class="btn btn-custom btn-custom--primary__color" id="categorySearch"
+                        data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                  <span>テンプレート</span>
+                  <img src="static/imgs/filter.png" alt=""/>
+                </button>
+                <div class="dropdown-menu" aria-labelledby="categorySearch" style="width: 150px">
+                  <div v-for="cate in listCategories" @click="$event.stopPropagation()">
+                    <label :for="cate">
+                      <input v-if="cate != null" :id="cate" type="checkbox" :value="cate" v-model="category"
+                             @change="categoryFilter()">
+                      {% raw %}{{cate}}{% endraw %}
+                    </label>
+                  </div>
+                  <div>
+                    <button class="btn btn-sm btn-success" @click="cateSelectAll()">Select all</button>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <button type="button" class="btn btn-custom btn-custom--primary__color" id="dateFilter"
+                        data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                  <span>年月</span>
+                  <img src="static/imgs/filter.png" alt=""/>
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dateFilter">
+                  <div>
+                    <label>Date from</label>
+                    <div class="form-group">
+                      <input class="form-control" type="date" v-model="dateFrom" @change="dateFilter">
+                    </div>
+                  </div>
+                  <div>
+                    <label>Date to</label>
+                    <div class="form-group">
+                      <input class="form-control" type="date" v-model="dateTo" @change="dateFilter">
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="search col-md-6">
+                <input type="text" name="q" class="searchbox" placeholder="Search" style="width: 100%"
+                       v-model="cate_name" v-on:keyup="searchName()">
+                <button type="submit" class="searchbtn"><i class="fas fa-search"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="content__table">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card card--transparent" style="margin-bottom: 0!important;">
+              <div class="card-body p-0">
+                <div class="toolbar">
+                  <!--        Here you can write extra buttons/actions for the toolbar              -->
+                </div>
+                <div class="material-datatables" style="margin-bottom: 10px">
+                  <table id="datatables" class="table table-striped table-no-bordered table-hover" cellspacing="0"
+                         style="width:100%">
+                    <thead>
+                    <tr>
+                      <th class="text-center">
+                        <div class="form-check">
+                          <label class="form-check-label">
+                            <input class="form-check-input" type="checkbox" v-on:change="selectAll"
+                                   v-model="allSelected"/>
+                            <span class="form-check-sign">
+                            <span class="check"></span>
+                          </span>
+                          </label>
+                        </div>
+                      </th>
+                      <th class="text-center" style="max-width: 300px">ファイル名</th>
+                      <th class="text-center">テンプレート</th>
+                      <th class="text-center">ステータス</th>
+                      <th class="text-center">登録日時</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr v-for="d in listFilter" :class="d.view_status ? 'font-weight-normal' : 'font-weight-bold'">
+                      <td class="td__content text-center">
+                        <div class="form-check">
+                          <label class="form-check-label">
+                            <input class="form-check-input" type="checkbox" :value="d.id" v-on:change="select"
+                                   v-model="selectedList"/>
+                            <span class="form-check-sign">
+                            <span class="check"></span>
+                          </span>
+                          </label>
+                        </div>
+                      </td>
+                      <td class=" td__content text-center" style="max-width: 300px">
+                      <span class="td__content-text">
+                        <a :href="'/result?id='+d['id']">{% raw %}{{d.name}}{% endraw %}</a>
+                      </span>
+                      </td>
+                      <td class=" td__content text-center">
+                        <select v-if="d.type == null || checkFormat(d.type)" class="form-control td__content-text"
+                                v-model="d.type" style="color: #086799; width: 70%; margin: auto"
+                                :class="d.error ? 'is-invalid' : ''">
+                          <option :value="null"></option>
+                          <option v-for="f in formats" :value="f.name">
+                            {% raw %}{{f.name}}{% endraw %}
+                          </option>
+                        </select>
+                        <span v-else>{% raw %}{{d.type}}{% endraw %}</span>
+                      </td>
+                      <td class="td__content text-center">
+                        <div v-if="d.status == 0" class="progress candy" data-width="100%">
+                          <div class="progress-bar" style="width: 100%;"></div>
+                        </div>
+                        <span v-else class="td__content-text"
+                              :class="d.status == 3 ? 'processing' : d.status == 1 ? 'success' : 'error'">
+                          {% raw %}{{showStatus(d.status)}}{% endraw %}
+                        </span>
+                      </td>
+                      <td class="td__content text-center">
+                        {% raw %}{{prettyDate(d.created_at)}}{% endraw %}
+                      </td>
+                    </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <nav>
+                  <ul class="pagination justify-content" style="justify-content: flex-end">
+                    <li><a @click="first"> << </a></li>
+                    <li><a @click="prev"> < </a></li>
+                    <li v-for="p in showPage" :class="pageNo == p ? 'active' : ''">
+                      <a @click="page(p)">{% raw %}{{p}}{% endraw %}</a>
+                    </li>
+                    <li><a @click="next"> > </a></li>
+                    <li><a @click="last"> >> </a></li>
+                    <li style="margin-left: 20px;">
+                      <select class="form-control" style="font-size: 15px; font-weight: bold; color: #086799; !important; padding: 0px 8px !important; height: 32px!important; " v-model="size" @change="changePagesize">
+                        <option value="-1">ALL</option>
+                        <option value="10">10</option>
+                        <option value="20">20</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                      </select>
+                    </li>
+                  </ul>
+                </nav>
+              </div>
+              <!-- end content-->
+            </div>
+            <!--  end card  -->
+          </div>
+          <!-- end col-md-12 -->
+        </div>
+      </div>
+    </div>
+    <div class="modal fade" id="alert" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-body" style="text-align: center">
+            <h3 style="font-weight: bold; color: red;">テンプレートをご指定ください</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a class="btn__aminate btn__upload" href="/upload">
+    <div class="btn__aminate-image">
+      <img src="./static/imgs/shap5.png" alt="" class=""/>
+    </div>
+  </a>
+  <script src="static/js/socket.io.js"></script>
+  <script src="static/js/history.js?v=2309"></script>
+{% endblock content %}

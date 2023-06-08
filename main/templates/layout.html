@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+  <title>
+    AIME-OCR
+  </title>
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no" name="viewport"/>
+  <!--     Fonts and icons     -->
+  <link rel="stylesheet" type="text/css"
+        href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:400,700|Material+Icons"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.min.css') }}"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/owl.carousel.min.css') }}"/>
+  <!-- <script src="https://kit.fontawesome.com/a076d05399.js"></script> -->
+  <!-- CSS Files -->
+  <link href="{{ url_for('static', filename='assets/css/dashboard.min.css') }}" rel="stylesheet"/>
+  <link href="{{ url_for('static', filename='assets/demo/demo.css') }}" rel="stylesheet"/>
+  <link href="{{ url_for('static', filename='assets/css/custom.css') }}" rel="stylesheet"/>
+  <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/vue.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/fabric.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/draw.js') }}?v=2409"></script>
+  <script src="{{ url_for('static', filename='js/utils.js') }}"></script>
+  <script src="{{ url_for('static', filename='assets/js/core/popper.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/jquery-ui.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='assets/js/core/bootstrap-material-design.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/owl.carousel.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='assets/js/plugins/perfect-scrollbar.jquery.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='assets/js/plugins/jquery.dataTables.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='assets/js/material-dashboard.min.js') }}" type="text/javascript"></script>
+  <script src="{{ url_for('static', filename='js/bootstrap-notify.min.js')}}""></script>
+</head>
+<body class="">
+<script>
+  if (window.screen.width < 1200) {
+    $('body').addClass('sidebar-mini');
+  }
+  var langChoose = localStorage.getItem('lang') ? localStorage.getItem('lang') : "en";
+  var arrLanguage = {
+    "en":{
+      "dashboard":"AIME-OCR Dashboard",
+      "ocr" : "AIME-OCR Recognition",
+      "upload": "Upload",
+      "report": "Report",
+      "license_plate":"License Plate",
+      "driver_license": "Driver License",
+      "vehicle_verification" : "Vehicle Verification",
+      "filelist":"File List",
+      "manage" : "Management Document",
+      "setting":"Extraction setting",
+      "template" : "Templates",
+      "question" : "Questionaire",
+      "log":"Log Out",
+      "manual":"User Manual",
+      "guide":"Guide",
+      "profile": "Profile",
+      "config":"Configuration",
+      "logout":"Log Out",
+    },
+    "ja": {
+      "dashboard":"AIME-OCRダッシュボード",
+      "ocr" : "AIME-OCR認識",
+      "upload": "アップロード",
+      "report": "帳票",
+      "license_plate":"ナンバープレート",
+      "driver_license": "運転免許証",
+      "vehicle_verification" :"コーションプレー",
+      "manage" :"資料管理",
+      "filelist":"ファイルリスト",
+      "setting":"抽出情報設定",
+      "template" : "抽出情報フォーマット設定",
+      "question" :"アンケート",
+      "log":"ログアウト",
+      "manual":"利用マニュアル",
+      "guide" :"案内",
+      "profile": "プロフィール",
+      "config":"設定",
+      "logout":"ログアウト",
+
+    }
+  }
+</script>
+<div class="wrapper">
+  <div class="sidebar" style="background-color:#fff;padding: 20px">
+    <div class="logo">
+      <div class="menu-logo">
+        <a href="/"> <img src="{{ url_for('static', filename='imgs/logo.png') }}"/></a>
+      </div>
+      <div class="menu-icon">
+        <button id="minimizeSidebar" class="btn btn-just-icon btn-white btn-fab btn-round">
+          <img src="{{ url_for('static', filename='imgs/group8.png') }}" alt=""/>
+        </button>
+      </div>
+    </div>
+    <div class="sidebar-wrapper">
+      <ul class="nav">
+        <li class="nav-item">
+          <a class="nav-link" href="/">
+            <i class="aminext-icon"><img src="{{ url_for('static', filename='imgs/home.png') }}" alt=""/></i>
+            <p class="lang" key ="dashboard">ダッシュボード</p>
+          </a>
+        </li>
+        <li class="nav-item ">
+          <a class="nav-link" data-toggle="collapse" href="#pagesExamples">
+            <i class="aminext-icon"><img src="{{ url_for('static', filename='imgs/header.png') }}" alt=""/></i>
+            <p class="lang" key ="ocr">AIME-OCR 認識</p>
+          </a>
+          <div class="collapse" id="pagesExamples">
+            <ul class="nav">
+              <li class="nav-item ">
+                <a class="nav-link" href="/upload">
+                  <span  key ="upload" class="lang sidebar-normal">アップロード</span>
+                </a>
+              </li>
+              <li class="nav-item ">
+                <a class="nav-link" href="/report">
+                  <span class="lang sidebar-normal" key="report">帳票</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/license_plate">
+                  <span class="sidebar-normal lang" key ="license_plate">ナンバープレート</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/driver_license">
+                  <span class="sidebar-normal lang" key="driver_license">運転免許証</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/vehicle_verification">
+                  <span class="sidebar-normal lang" key="vehicle_verification">車検証認識</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </li>
+        <li class="nav-item ">
+          <a class="nav-link" data-toggle="collapse" href="#documents">
+            <i class="aminext-icon"><img src="{{ url_for('static', filename='imgs/document.png') }}" alt=""/></i>
+            <p class="lang" key="manage">ファイル一覧</p>
+          </a>
+          <div class="collapse" id="documents">
+            <ul class="nav">
+              <li class="nav-item ">
+                <a class="nav-link" href="/listPackage">
+                  <span class="sidebar-normal lang" key="filelist">Folder List</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </li>
+        {#        <li class="nav-item ">#}
+        {#          <a class="nav-link" data-toggle="collapse" href="#formsExamples">#}
+        {#            <i class="aminext-icon"><img src="static/imgs/download.png" alt=""/></i>#}
+        {#            <p>出力ファイルマスター</p>#}
+        {#          </a>#}
+        {#          <div class="collapse" id="formsExamples">#}
+        {#            <ul class="nav">#}
+        {#              <li class="nav-item ">#}
+        {#                <a class="nav-link" href="#">#}
+        {#                  <span class="sidebar-normal">ファイル一覧</span>#}
+        {#                </a>#}
+        {#              </li>#}
+        {#            </ul>#}
+        {#          </div>#}
+        {#        </li>#}
+        <li class="nav-item">
+          <a class="nav-link" data-toggle="collapse" href="#settings" disabled="disabled">
+            <i class="aminext-icon"><img src="{{ url_for('static', filename='imgs/setting.png') }}" alt=""/></i>
+            <p class="lang" key="setting">抽出情報設定</p>
+          </a>
+          <div class="collapse" id="settings">
+            <ul class="nav">
+              <li class="nav-item">
+                <a class="nav-link" href="/templates">
+                  <span class="sidebar-normal lang" key="template">抽出情報フォーマット設定</span>
+                </a>
+              </li>
+              <li class="nav-item ">
+                <a class="nav-link" href="../examples/tables/extended.html">
+                  <span class="sidebar-normal lang" key="question">アンケート</span>
+                </a>
+              </li>
+              <li class="nav-item ">
+                <a class="nav-link" href="../examples/tables/datatables.net.html">
+                  <span class="sidebar-normal lang" key="log">ログアウト</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </li>
+        <li class="nav-item ">
+          <a class="nav-link" data-toggle="collapse" href="#mapsExamples">
+            <i class="aminext-icon"><img src="{{ url_for('static', filename='imgs/book.png') }}" alt=""/></i>
+            <p class="lang" key="manual">利用マニュアル</p>
+          </a>
+          <div class="collapse" id="mapsExamples">
+            <ul class="nav">
+              <li class="nav-item ">
+                <a class="nav-link" href="../examples/maps/google.html">
+                  <span class="sidebar-normal lang" key="guide">案内</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </li>
+      </ul>
+      <div  style="width: 100%; padding: 10px; display: flex; justify-content: center; height: 0;font-size: medium;">
+       <p>Language</p>
+      </div>
+      <div  style="width: 100%; padding: 10px; display: flex; justify-content: center;">
+        <button id="eng" type="button" class="btn-icon"> <img src="../static/imgs/eng.png" /></button>
+        <button id="japan" type="button" class="btn-icon"><img src="../static/imgs/japan.png" /></button>
+      </div>
+      <div class="text-center" style="margin-top: 10rem;">
+        <span class="align-bottom">AIME OCR Version 1.1 <br/>Copyright © AIMENEXT 2020.</span>
+      </div>
+    </div>
+  </div>
+  <div class="main-panel">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top ">
+      <div class="container-fluid">
+        <div class="navbar-wrapper">
+          <h2 class="navbar__title lang" key="ocr">AIME-OCR認識 / <span class="lang" key="report">帳票</span></h2>
+        </div>
+        <button class="navbar-toggler" type="button" data-toggle="collapse"
+                aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="navbar-toggler-icon icon-bar"></span>
+          <span class="navbar-toggler-icon icon-bar"></span>
+          <span class="navbar-toggler-icon icon-bar"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-end">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <span class="nav-item__name">{{ current_user.name }}</span>
+            </li>
+            <li class="nav-item dropdown">
+              <a href="#" class="nav-item__avatar" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <img style="height: 100%; width: 100%" src="{{ url_for('static', filename='imgs/'+current_user.image_file) }}" alt=""/>
+              </a>
+              <div style="font-family: Roboto; font-size: 14px; line-height: 16px; text-align: center; color: #2D4761;"
+                   class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownProfile">
+                <a class="dropdown-item" style="font-family: Roboto; font-size: 14px" href="/profile"> <span class="lang" key="profile">プロフィール</span> </a>
+                <a class="dropdown-item" style="font-family: Roboto; font-size: 14px" href="#"> <span class="lang" key="config">設定 </span></a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" style="font-family: Roboto; font-size: 14px" href="/logout"> <span class="lang" key="logout">ログアウト</span></a>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <nav aria-label="breadcrumb" id="bread-scrum" role="navigation" style="position: absolute; top:4vh; left: 25px;">
+        <ol class="breadcrumb" id="bread-scrum-ol" style="margin: unset; background: unset;">
+          <!-- <li class="breadcrumb-item "><a href="javascript:;">Home</a></li>
+          <li class="breadcrumb-item "><a href="javascript:;">Library</a></li>
+          <li class="breadcrumb-item  active" aria-current="page">Data</li> -->
+        </ol>
+      </nav>
+    </nav>
+    <!-- End Navbar -->
+    {% block content %}{% endblock %}
+  </div>
+</div>
+
+<!-- loading -->
+<div class="loader">
+  <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="200px" height="200px"
+       viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
+    <g transform="translate(50,50)">
+      <circle cx="0" cy="0" r="8.333333333333334" fill="none" stroke="#e15b64" stroke-width="4"
+              stroke-dasharray="26.179938779914945 26.179938779914945" transform="rotate(13.1559)">
+        <animateTransform attributeName="transform" type="rotate" values="0 0 0;360 0 0" times="0;1" dur="1s"
+                          calcMode="spline" keySplines="0.2 0 0.8 1" begin="0"
+                          repeatCount="indefinite"></animateTransform>
+      </circle>
+      <circle cx="0" cy="0" r="16.666666666666668" fill="none" stroke="#f47e60" stroke-width="4"
+              stroke-dasharray="52.35987755982989 52.35987755982989" transform="rotate(84.8526)">
+        <animateTransform attributeName="transform" type="rotate" values="0 0 0;360 0 0" times="0;1" dur="1s"
+                          calcMode="spline" keySplines="0.2 0 0.8 1" begin="-0.2"
+                          repeatCount="indefinite"></animateTransform>
+      </circle>
+      <circle cx="0" cy="0" r="25" fill="none" stroke="#f8b26a" stroke-width="4"
+              stroke-dasharray="78.53981633974483 78.53981633974483" transform="rotate(172.589)">
+        <animateTransform attributeName="transform" type="rotate" values="0 0 0;360 0 0" times="0;1" dur="1s"
+                          calcMode="spline" keySplines="0.2 0 0.8 1" begin="-0.4"
+                          repeatCount="indefinite"></animateTransform>
+      </circle>
+      <circle cx="0" cy="0" r="33.333333333333336" fill="none" stroke="#abbd81" stroke-width="4"
+              stroke-dasharray="104.71975511965978 104.71975511965978" transform="rotate(261.236)">
+        <animateTransform attributeName="transform" type="rotate" values="0 0 0;360 0 0" times="0;1" dur="1s"
+                          calcMode="spline" keySplines="0.2 0 0.8 1" begin="-0.6"
+                          repeatCount="indefinite"></animateTransform>
+      </circle>
+      <circle cx="0" cy="0" r="41.666666666666664" fill="none" stroke="#849b87" stroke-width="4"
+              stroke-dasharray="130.89969389957471 130.89969389957471" transform="rotate(337.468)">
+        <animateTransform attributeName="transform" type="rotate" values="0 0 0;360 0 0" times="0;1" dur="1s"
+                          calcMode="spline" keySplines="0.2 0 0.8 1" begin="-0.8"
+                          repeatCount="indefinite"></animateTransform>
+      </circle>
+    </g>
+  </svg>
+</div>
+
+<div class="modal fade" id="imagemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-draggable">
+    <div class="modal-content">
+      <div class="modal-body">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">×</span>
+          <span class="sr-only">Close</span>
+        </button>
+        <img src="" class="imagepreview" style="width: 100%;">
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="show-svg" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-draggable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+          <span aria-hidden="true">×</span>
+          <span class="sr-only">Close</span>
+        </button>
+      </div>
+      <div class="modal-body" style="padding: 10px 5px"></div>
+    </div>
+  </div>
+</div>
+<!-- line -->
+<div class="line" id="custom-line"></div>
+<!-- end line  -->
+
+<script type="text/javascript">
+  
+  $('#eng').click(function swichToEng() {
+    localStorage.setItem('lang','en');
+    location.reload();
+  })
+  $('#japan').click(function swichToEng() {
+    localStorage.setItem('lang','ja');
+    location.reload();
+  })
+  jQuery(document).ready(function () {
+    $('.modal-draggable').draggable({
+      axis: "y",
+      scroll: false,
+      cancel: 'text'
+    });
+    $('.lang').each((ind,ele) =>{
+      $(ele).text(arrLanguage[langChoose][$(ele).attr("key")]);
+    });
+    var url = window.location.pathname;
+    $('li.nav-item a').each(function () {
+      let hr = $(this).attr('href');
+      if (hr == url) {
+        $(this).parent("li.nav-item").addClass('active');
+        $(this).parents(".collapse").addClass('show');
+      }
+    });
+  });
+  // function updateBreadScrum(arr){
+  //   arr.forEach((element,ind) => {
+  //     if(ind == (arr.length-1)){
+  //       let li_html ='<li class="breadcrumb-item active " aria-current="page">'+ element['name'] +'</li>'
+  //       $("#bread-scrum-ol").append(li_html);
+  //     }else{
+  //       let li_html ='<li class="breadcrumb-item "><a href="'+ element['link'] +'">'+ element['name'] +'</a></li>'
+  //       $("#bread-scrum-ol").append(li_html);
+  //     }
+  //   })
+  // };
+  // let arrLink = [{'link': '#','name':'Management document'},{'link': '#','name':'List file'}]
+  // updateBreadScrum(arrLink);
+
+</script>
+</body>
+</html>

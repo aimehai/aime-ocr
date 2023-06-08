@@ -1,0 +1,242 @@
+{% extends "layout.html" %}
+{% block content %}
+  <style>
+    .card {
+      background-color: #8bebff;
+    }
+
+    .icon {
+      display: inline-block;
+      width: 1em;
+      height: 1em;
+      stroke-width: 0;
+      stroke: currentColor;
+      fill: currentColor;
+    }
+
+    .wrapper-container {
+      width: 100%;
+      height: auto;
+      min-height: 50vh;
+      padding: 50px 20px;
+      padding-top: 100px;
+    }
+
+    .profile-card {
+      width: 100%;
+      min-height: 460px;
+      margin: auto;
+      box-shadow: 0px 8px 60px -10px rgba(13, 28, 39, 0.6);
+      background: #fff;
+      border-radius: 12px;
+      max-width: 700px;
+      position: relative;
+    }
+
+    .profile-card.active .profile-card__cnt {
+      filter: blur(6px);
+    }
+
+    .profile-card.active .profile-card-message,
+    .profile-card.active .profile-card__overlay {
+      opacity: 1;
+      pointer-events: auto;
+      transition-delay: .1s;
+    }
+
+    .profile-card.active .profile-card-form {
+      transform: none;
+      transition-delay: .1s;
+    }
+
+    .profile-card__img {
+      width: 150px;
+      height: 150px;
+      margin-left: auto;
+      margin-right: auto;
+      transform: translateY(-50%);
+      border-radius: 50%;
+      overflow: hidden;
+      position: relative;
+      z-index: 4;
+      box-shadow: 0px 5px 50px 0px #1b22fc, 0px 0px 0px 7px rgba(57, 185, 255, 0.5);
+      cursor: pointer;
+    }
+
+    .profile-card__img img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+
+    .profile-card__cnt {
+      margin-top: -35px;
+      text-align: center;
+      padding: 0 20px;
+      padding-bottom: 40px;
+      transition: all .3s;
+    }
+
+    .profile-card__name {
+      font-weight: 700;
+      font-size: 24px;
+      color: #6944ff;
+      margin-bottom: 15px;
+    }
+
+    .profile-card__txt {
+      font-size: 18px;
+      font-weight: 500;
+      color: #324e63;
+      margin-bottom: 15px;
+    }
+
+    .profile-card__txt strong {
+      font-weight: 700;
+    }
+
+    .profile-card-loc {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .profile-card-loc__icon {
+      display: inline-flex;
+      font-size: 27px;
+      margin-right: 10px;
+    }
+
+    .profile-card-ctr {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 40px;
+    }
+
+    .profile-card__button {
+      background: none;
+      border: none;
+      font-family: 'Quicksand', sans-serif;
+      font-weight: 700;
+      font-size: 16px;
+      margin: 15px 35px;
+      padding: 5px 20px;
+      min-width: 150px;
+      border-radius: 25px;
+      min-height: 50px;
+      color: #fff;
+      cursor: pointer;
+      backface-visibility: hidden;
+      transition: all .3s;
+    }
+
+    .profile-card__button:focus {
+      outline: none !important;
+    }
+
+    .profile-card__button:first-child {
+      margin-left: 0;
+    }
+
+    .profile-card__button:last-child {
+      margin-right: 0;
+    }
+
+    .profile-card__button.button--blue {
+      background: linear-gradient(45deg, #1da1f2, #0e71c8);
+      box-shadow: 0px 4px 30px rgba(19, 127, 212, 0.4);
+    }
+
+    .profile-card__button.button--blue:hover {
+      box-shadow: 0px 7px 30px rgba(19, 127, 212, 0.75);
+    }
+
+    .profile-card__button.button--green {
+      background: linear-gradient(45deg, #1ff294, #1db25c);
+      box-shadow: 0px 4px 30px rgba(28, 212, 105, 0.4);
+    }
+
+    .profile-card__button.button--green:hover {
+      box-shadow: 0px 7px 30px rgba(20, 212, 127, 0.75);
+    }
+
+    .profile-card__button.button--orange {
+      background: linear-gradient(45deg, #d5135a, #f05924);
+      box-shadow: 0px 4px 30px rgba(223, 45, 70, 0.35);
+    }
+
+    .profile-card__button.button--orange:hover {
+      box-shadow: 0px 7px 30px rgba(223, 45, 70, 0.75);
+    }
+
+    .form-group {
+      text-align: center;
+    }
+
+    .form-group label {
+      font-weight: 700;
+      color: #000;
+      margin: 20px;
+    }
+
+    .form-group input {
+      width: 60%;
+      margin: auto;
+    }
+  </style>
+  <div id="profile" class="content">
+    <div class="container">
+      <div class="card">
+        <div class="wrapper-container">
+          <div class="profile-card js-profile-card">
+            <div class="profile-card__img" @click="updateAvatar()">
+              <img src="./static/imgs/{{ current_user.image_file }}" alt="profile card">
+            </div>
+            <div class="profile-card__cnt js-profile-cnt">
+              <div class="profile-card__name">{{ current_user.name }}</div>
+              <div class="profile-card__txt">{{ data.name.upper() }}</div>
+              <div class="profile-card-loc">
+                <div class="profile-card-ctr">
+                  <button class="profile-card__button button--blue" @click="showUpdateInfor()">プロファイル編集</button>
+                  <button class="profile-card__button button--blue" @click="showUpdatePass()">パスワード変更</button>
+                </div>
+              </div>
+              <div v-if="update_infor" class="update-profile">
+                <div class="form-group">
+                  <label>氏名</label>
+                  <input class="form-control" type="text" v-model="username" :class="username_error ? 'is-invalid' : ''">
+                </div>
+                <div class="profile-card-ctr">
+                  <button class="profile-card__button button--green" @click="updateInfor">変更を保存</button>
+                  <button class="profile-card__button button--orange" @click="cancelUpdate">キャンセル</button>
+                </div>
+              </div>
+              <div v-if="update_pass" class="update-password">
+                <div class="form-group">
+                  <label>新パスワード</label>
+                  <input class="form-control" type="password" v-model="password">
+                </div>
+                <div class="form-group">
+                  <label>再入力パスワード</label>
+                  <input class="form-control" type="password" v-model="confirmed_password" :class="password_error ? 'is-invalid' : ''">
+                  <div class="invalid-feedback" v-if="password_error">新パスワードと再入力パスワードが一致しません。</div>
+                </div>
+                <div class="profile-card-ctr">
+                  <button class="profile-card__button button--green" @click="updatePassword">変更を保存</button>
+                  <button class="profile-card__button button--orange" @click="cancelUpdate">キャンセル</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <input id="avatar" type="file" accept="image/*" hidden ref="files" v-on:change="handleFilesUpload()">
+      </div>
+    </div>
+  </div>
+  <script src="static/js/profile.js?v=10"></script>
+{% endblock content %}

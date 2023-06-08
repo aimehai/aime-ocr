@@ -1,0 +1,359 @@
+{% extends "layout.html" %}
+{% block content %}
+  <style type="text/css">
+    table tr td {
+      padding: 10px 15px;
+    }
+  .btnRefresh{
+    background-color: rgb(70, 192, 210) !important;
+    height: 4rem;
+    text-transform: capitalize;
+    align-items: center;
+    display: flex;
+    font-size: initial;
+    justify-content: space-evenly;
+  }
+
+  .resultSearch{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0px;
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 15px;
+    line-height: initial;
+    color: #2D4761;
+  }
+  .custom-list {
+    font-size: 18px;
+    width: 300px;
+    padding: 20px 50px;
+    background-color: #46C0D2;
+    border-radius: 5px;
+    margin-bottom: 25px;
+  }
+  ::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: #B4CADF;;
+    opacity: 1; /* Firefox */
+  }
+  </style>
+  <script>
+    var localData = {{ data | tojson }};
+  </script>
+  <div id="upload" class="content" style="padding-top: 8vh;">
+    <div class="container">
+      <div class="card" style="padding-left: 16px; padding-right: 16px;">
+        <!-- <div v-if="formats != null && subforms.length > 0 && default_type==null" style="padding: 10%">
+          <div v-for="item in subforms" class="" style="text-align: center">
+            <div class="btn custom-list" style="text-align: left" @click="selectDefault(item)">
+              <img src="static/imgs/doc2.png" alt="" style="margin-right: 50px">
+              <span>{% raw %}{{item.name}}{% endraw %}</span>
+            </div>
+          </div>
+        </div> -->
+        <div id="upload-content" class="card-body" @drop.prevent="fileDropHover" @dragover.prevent="fileDragHover" @dragleave.prevent="fileDragHover">
+          <div v-if="list.length == 0 || folderName == null" class="upload__content">
+            <div href="#">
+              <img src="static/imgs/shap6.png" alt=""/>
+            </div>
+            <h2 class="upload__title">
+              {% raw %}{{ langChoose =='ja' ? '帳票などファイルをドロップする' : 'Drop files such as forms' }}{% endraw %}
+            </h2>
+            <h2 class="upload__subtitle">
+              {% raw %}{{ langChoose =='ja' ? 'または' : 'Or' }}{% endraw %}
+            </h2>
+            <div class="upload__icon" style="cursor: pointer" v-on:click="selectFile()">
+              <img src="static/imgs/combine.png" alt=""/>
+            </div>
+            <input type="file" id="files" ref="files" v-on:change="handleFilesUpload()" hidden multiple accept="image/*, application/pdf"/>
+            <div class="upload__description text-center">
+              <span class="modified">PDF・JPEG・JPG・PNG</span>
+              <div class="flex justify-content-center align-items-center">
+                <div class="row">
+                  <div class="col-md-2"></div>
+                  <div class="col-md-8">
+                    <span class="text-center">{% raw %}{{ langChoose =='ja' ? '複数の画像をアップロード可能 20MB 以内' : 'Multiple images can be uploaded within 20MB' }}{% endraw %}</span>
+                  </div>
+                  <div class="col-md-2"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- <div v-else-if="list.length > 0" class="preview__container">
+            <div class="header row" style="font-weight: bold; color: #086799; text-align: center">
+              <div class="row" style="margin: auto">
+                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                  <button type="button" class="btn btn-md btn-custom btn-custom--secodary__color" v-on:click="clear()">
+                    <img src="static/imgs/prev_white.png" alt="">
+                    <span>戻す</span>
+                  </button>
+                </div>
+                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                  <button type="button" class="btn btn-md btn-custom btn-custom--secodary__color" v-on:click="submitFiles()">
+                    <img src="static/imgs/upload.png" alt="">
+                    <span>アップロード</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="preview__content">
+              <table style="width: 80%; margin: auto;">
+                <tr v-for="f, id in list">
+                  <td>
+                    <img class="preview__img" :src="f.url" :alt="f.file.name" onError="this.onerror=null; this.src='static/imgs/pdf.jpg';">
+                  </td>
+                  <td>
+                    <input v-model="f.name" class="form-control form-inline" style="width: 70%">
+                  </td>
+                  <td>
+                    <button type="button" class="btn btn-md btn-danger" style="padding: 10px 15px" @click="deleteImg(id)">
+                      <i class="material-icons" style="font-size: 2rem !important;">delete_outline</i>
+                    </button>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </div> -->
+        </div>
+
+    <!-- show folder -->
+      <div v-show="folderName!= null && list.length > 0" class="row">
+        <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
+            <p class="font-weight-bold" style="font-family: Noto Sans JP;
+            font-style: normal;
+            font-weight: normal;
+            font-size: 16px;
+            line-height: 23px;"
+            >
+            {% raw %}{{ langChoose =='ja' ? 'ドキュメントの一覧表示：' : 'List documents:' }}{% endraw %}  <strong >{% raw %}{{folderName}}{% endraw %}</strong> 
+            </p>
+        </div>
+        
+      </div>
+      <div v-if="folderName!= null && list.length > 0" class="row">
+        <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10">
+          <div class="search" style="height: 100%; font-size: 1.7rem;">
+            <img src="../static/imgs/search.png" style="
+              position: absolute;
+              top: 15px;
+              left: 22px;"
+              />
+            <input type="text" v-model="textSearch" name="q" :placeholder="langChoose =='ja' ?'検索':'Search'" class="searchbox inputSearch" >
+            </input>
+          </div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
+          <button class="btn btn-md " @click="searchClick" type="submit" style="font-size: 14px; height: 4.5rem; color: #fff; width: 100%;  background-color: #46C0D2; border-radius: 4px;" >{% raw %}{{ langChoose =='ja' ? '検索' : 'Search'}}{% endraw %}</button>
+        </div>
+      </div>
+      <div>
+      <!-- content upload -->
+      <div class="content__table" v-if="folderName!= null && list.length > 0">
+        <div class="row">
+          <div class="col-md-12">
+            <div v-show="!textSearch" class="col-md-6">
+              <p class="documents-amount">
+              <strong>{% raw %}{{list.length +  (langChoose =='ja' ? "つのドキュメント":" documents")}}{% endraw %}</strong>  
+            </p>
+            </div>
+            <div v-show="textSearch" class="resultSearch col-md-12 col-lg-5">
+              {% raw %}{{ langChoose =='ja' ? '結果' : 'Result'}}{% endraw %} {% raw %}{{showFilterCount()}}{% endraw %} {% raw %}{{ langChoose =='ja' ? ('は'+ list.length +'に表示されています') : (' displayed out of' +list.length)}}{% endraw %}<button @click="refreshSearch()" class="btn btn-custom btnRefresh"> <img src="../static/imgs/reload.png" alt=""> {% raw %}{{ langChoose =='ja' ? '更新' : 'Refresh'}}{% endraw %} </button>
+            </div>
+            <div  style="margin-bottom: 0!important;">
+              <div class="card-body p-0">
+                <div class="toolbar">
+                  <!--        Here you can write extra buttons/actions for the toolbar              -->
+                </div>
+                <div class="material-datatables nicescroll-box" style="margin-bottom: 10px; height: 400px;">
+                  <!-- <table id="datatables" class="wrap table table-striped table-no-bordered" 
+                        style="width:100%"> -->
+                    <div  class="wrap table table-striped table-no-bordered" > 
+                      <div class="row font-weight-bold" 
+                      style="background: #DFF9FD; box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.05); border-radius: 4px; margin: 6px 0px; height: 50px; flex-wrap: inherit;" 
+                      v-for="(f, id) in list " :key="id" v-show=" textSearch==null ? true : f.name.includes(textSearch)  "
+                      >
+                        <div class="col-1 col-md-1" style="display: flex; align-items: center; justify-content: flex-start;" >
+                          <img src="../static/imgs/iconfile.png" style="margin-left: 19;">
+                        </div>
+                        <div class="col-6 col-md-6" style="display: flex; align-items: center; justify-content: flex-start; overflow: auto;">
+                          <span class="td__content-text text-center">
+                            {% raw %} {{f.name}} {% endraw %}
+                          </span>
+                        </div>
+                        <div class="col-4 col-md-4" style="display: flex; align-items: center; justify-content: flex-start; overflow: auto;">
+                          <select v-if="default_type == null" class="form-control"v-model="f.type" style="color: #086799;">
+                            <option :value="null"></option>
+                            <option v-for="d in subforms" :value="d.id">
+                              {% raw %}{{showTemplate(d.name)}}{% endraw %}
+                            </option>
+                          </select>
+                          <span class="td__content-text" v-else>{% raw %}{{showTemplate(default_type)}}{% endraw %}</span>
+                        </div>
+                        <div class="col-1 col-md-1" style="display: flex; align-items: center; justify-content: flex-end;">
+                          <button type="button" class="close"  @click="deleteImg(id,f.name)" style="margin-right: 22px;">
+                            <span style="font-size: xx-large;">×</span>
+                          </button>
+                        </div>
+                      </div>
+                      <!-- <tr class=" font-weight-bold" 
+                        style="background: #DFF9FD; box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.05); border-radius: 4px;" 
+                        v-for="(f, id) in list " :key="id" v-show=" textSearch==null ? true : f.name.includes(textSearch)  "
+                      >
+                        <td>
+                          <img src="../static/imgs/iconfile.png" style="padding-left: 27;">
+                        </td>
+                        <td class=" td__content " style="max-width: 300px;    
+                        font-family: Noto Sans JP;
+                        font-style: normal;
+                        font-weight: bold;
+                        font-size: 16px;
+                        line-height: 20px;
+                        color: #086799;
+                        text-align: inherit;">
+                          <span class="td__content-text">
+                            {% raw %} {{f.name}} {% endraw %}
+                          </span>
+                        </td>
+                        <td style="text-align: center; ">
+                          <button type="button" class="close"  @click="deleteImg(id,f.name)" style="margin-right: 37px;">
+                            <span style="font-size: xx-large;">×</span>
+                          </button>
+                        </td>
+                      </tr> -->
+                    </div>
+                  <!-- </table> -->
+                </div>
+                <div class="row">
+                  <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
+                  </div>
+                  <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+                    <button @click="submitFiles()" class="btn btn-md " type="submit" style="border-radius: 4px; font-size: 14px; height: 4.5rem; color: #fff; width: 100%;  background-color: #086799;;" >
+                      <span> {% raw %}{{ langChoose =='ja' ? 'OCR実行' : 'Run OCR' }}{% endraw %}    </span>
+                      <img src="../static/imgs/arrow right.png" alt="Run OCR" style="padding-left: 5px; padding-bottom: 3px;">
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <!-- end content-->
+            </div>
+            <!--  end card  -->
+          </div>
+          <!-- end col-md-12 -->
+        </div>
+      </div>
+      <!-- end content upload -->
+    </div>
+    <!-- end show folder -->
+    </div>
+  </div>
+  <!-- modal folder name -->
+  <div class="modal fade bd-example-modal-lg" id="create-folder" data-keyboard="false" data-backdrop="static" tabindex="-1" role="" aria-labelledby="myModalLabel" aria-modal="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered" role="document" style="margin-top: 0px;">
+        <div class="rectangle-139 modal-content" style="border-radius: 16px;">
+          <div class="modal-body">
+            <div class="modal-header">
+              <button type="button" @click="clear()" class="close" data-dismiss="modal">
+                <span aria-hidden="true"><img src="../static/imgs/close.png" alt=""></span>
+                <span class="sr-only">Close</span>
+              </button>
+            </div>
+              <div class="modal-body" style="    
+              height: 80%;
+              display: flex;
+              flex-direction: column;
+              justify-content: space-evenly;
+              align-items: center;">
+
+              <label style="
+              font-family: Roboto;
+              font-style: normal;
+              font-weight: bold;
+              font-size: 16px;
+              line-height: 19px;
+              color: #7C97B1;"> {% raw %}{{ langChoose =='ja' ? 'フォルダー名' : 'Folder Name' }}{% endraw %}</label>
+
+              <div class="form-group" style=" 
+              display: flex;
+              height: -webkit-fill-available;
+              flex-direction: column;
+              width: -webkit-fill-available;
+              justify-content: inherit;
+              align-items: center;">
+                <input class="inputCustom " v-model="nameInput" :placeholder="langChoose =='ja' ? 'フォルダー名入力...' : 'Enter the folder name here...'" type="text" >
+                <div style="    
+                display: flex;
+                justify-content: space-evenly;
+                width: 75%;">
+                  <button class="btn btn-md " type="button" @click="clear()" style=" font-size: 14px; height: 4.5rem; color: #7C97B1; width: 180px; background-color:  #E9F0F6; border-radius: 4px;"  data-dismiss="modal"> {% raw %}{{ langChoose =='ja' ? 'キャンセル' : 'Cancel' }}{% endraw %}</button>
+                  <button class="btn btn-md " @click="checkFolder(createFolder,showNotice)" type="submit" style="font-size: 14px; height: 4.5rem; color: #fff; width: 180px;     background-color: #086799; border-radius: 4px;" >{% raw %}{{ langChoose =='ja' ? '次へ' : 'Next' }}{% endraw %}</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- end modal  folder name -->
+    
+    <!-- modal notice  -->
+    <div class="modal fade bd-example-modal-lg" id="exampleModalCenter" data-keyboard="false" data-backdrop="static" tabindex="-1" role="" aria-labelledby="myModalLabel" aria-modal="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered" role="document" style="margin-top: 0px;">
+        <div class="rectangle-139 modal-content" style="border-radius: 16px;">
+          <div class="modal-body">
+            <div class="modal-header" style="
+            flex-direction: column;
+            padding-top: 0px;
+            align-items: center;"
+            >
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true"><img src="../static/imgs/close.png" alt=""></span>
+                <span class="sr-only">Close</span>
+              </button>
+              <img src="../static/imgs/icondanger.png" alt="">
+              <p style="text-align: center; font-size: 20px; width: 100%; font-weight: bold; line-height: 23px; color: #2D4761;">
+                {% raw %}{{ langChoose =='ja' ? 'よろしいですか？' : 'Are you sure?' }}{% endraw %}
+              </h2>
+            </div>
+            <div class="modal-body" style="
+              height: 55%;
+              display: flex;
+              flex-direction: column;
+              justify-content: space-between;
+              padding-top: 20px;
+            ">
+                <p style="text-align: center; 
+                font-weight: bold;
+                font-size: 16px;
+                line-height: 19px;
+                color: #7C97B1;">
+                  {% raw %}{{ langChoose =='ja' ? 'ドキュメント＃' : 'Are you sure delete ' }}{% endraw %} <strong>{% raw %} {{name_delete}} {% endraw %}{% raw %}{{ langChoose =='ja' ? 'を削除しますか。' : '' }}{% endraw %} </strong>?
+                </p>
+                <div style="    
+                display: flex;
+                justify-content: space-evenly;">
+                  <button class="btn btn-md " type="button"  style=" font-size: 14px; height: 4.5rem; color: #7C97B1; width: 180px; background-color:  #E9F0F6; border-radius: 4px;"  data-dismiss="modal"> {% raw %}{{ langChoose =='ja' ? 'キャンセル' : 'Cancel' }}{% endraw %}</button>
+                  <button type="submit" @click="ConfirmDeleteImg()" class="btn btn-md" style="font-size: 14px; height: 4.5rem; color: #fff; width: 180px; background-color: #FF4461; border-radius: 4px;">{% raw %}{{ langChoose =='ja' ? '削除':'Delete' }}{% endraw %}</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    <!-- end moda notice  -->
+
+    <!-- alert -->
+     <!-- <div id="snackbar-custom" v-if="dataNotice" v-bind:class="{show : showAlert}" style="z-index: 100000;">    
+        <div class="alert alert-danger alert-dismissible" role="alert">
+        <button type="button" @click="hideNotice()" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <i class="material-icons fa-lg">block</i><strong>{% raw %}{{dataNotice.title}}{% endraw %}!</strong> {% raw %}{{dataNotice.msg}}{% endraw %}
+        </div>
+      </div>  -->
+   <!-- end alert  -->
+
+  </div>
+  <script src="../static/js/jquery.nicescroll.min.js"></script>
+  <script src="static/js/upload.js?v=9686"></script>
+{% endblock content %}

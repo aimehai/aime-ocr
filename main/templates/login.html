@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+  <link rel="stylesheet/less" type="text/css" href="static/css/styles.less"/>
+  <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/less.min.js') }}"></script>
+  {% if title %}
+    <title>AIME OCR - {{ title }}</title>
+  {% else %}
+    <title>AIME OCR</title>
+  {% endif %}
+  <style type="text/css">
+    @media screen and (max-width: 800px) {
+      .background {
+        display: none !important;
+      }
+      .login {
+        width: 100% !important;
+      }
+    }
+  </style>
+</head>
+<body>
+<div id="login-page">
+  <div class="login">
+    <h2 class="login-title">
+      <img src="static/imgs/logo.png">
+    </h2>
+
+    <form class="form-login" method="post">
+      {{ form.hidden_tag() }}
+      <div class="form-group">
+        {{ form.company_id.label(class="form-control-label") }}
+        {% if form.company_id.errors %}
+          {{ form.company_id(class="form-control form-control-lg is-invalid") }}
+          <div class="invalid-feedback">
+            {% for error in form.company_id.errors %}
+              <span>{{ error }}</span>
+            {% endfor %}
+          </div>
+        {% else %}
+          {{ form.company_id(class="form-control form-control-lg") }}
+        {% endif %}
+      </div>
+      <div class="form-group">
+        {{ form.username.label(class="form-control-label") }}
+        {% if form.username.errors %}
+          {{ form.username(class="form-control form-control-lg is-invalid") }}
+          <div class="invalid-feedback">
+            {% for error in form.username.errors %}
+              <span>{{ error }}</span>
+            {% endfor %}
+          </div>
+        {% else %}
+          {{ form.username(class="form-control form-control-lg") }}
+        {% endif %}
+      </div>
+
+      <div class="form-group">
+        {{ form.password.label(class="form-control-label") }}
+        {% if form.password.errors %}
+          {{ form.password(class="form-control form-control-lg is-invalid") }}
+          <div class="invalid-feedback">
+            {% for error in form.password.errors %}
+              <span>{{ error }}</span>
+            {% endfor %}
+          </div>
+        {% else %}
+          {{ form.password(class="form-control form-control-lg") }}
+        {% endif %}
+      </div>
+
+      <div class="form-group">
+        {{ form.remember() }}
+        {{ form.remember.label(class="form-control-label") }}
+      </div>
+
+      <div class="form-group">
+        {{ form.submit(class="btn-login") }}
+      </div>
+    </form>
+    <div class="footer">
+      <p>AIME OCR Version 1.1</p>
+      <p>Copyright © AIMENEXT 2020. All rights reserved.</p>
+    </div>
+  </div>
+  <div class="background">
+    <div class="content">
+      <div class="title">AIME - OCR</div>
+      <div class="sub-title">万能OCR</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
